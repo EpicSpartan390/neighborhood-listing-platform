@@ -94,3 +94,75 @@ Provide a short file plan, terminal commands, accessibility requirements, and a 
 | Google AI Studio | App Shell Architect prompt requesting a file plan, commands, accessibility requirements, and verification checklist | Accepted the basic file plan, semantic HTML requirements, heading hierarchy, responsive layout, and local-page checks. | Rejected the `my-app` destination because it would create a nested project folder, and rejected the multiline Bash formatting because the student is using Windows PowerShell. The corrected destination is the current repository represented by `.`. | Compared the response with the assignment and confirmed that the project must be created in the current repository. Commands were not treated as verified results. | Create minimal Next.js app shell |
 
 | ChatGPT | Step-by-step implementation guidance for the required accessible app shell | Used the semantic `page.tsx` structure, project heading, purpose statement, responsive Tailwind layout, three feature cards, and updated page metadata. | Rejected the generic Next.js starter content and did not add a database, authentication, backend service, secrets, or unnecessary libraries. | Confirmed the local page returned HTTP 200, the browser console had no errors, `npm run lint` passed, and `npm run build` compiled successfully. | Create accessible neighborhood app shell |
+
+
+## Lab 2 Type Interface Prompt
+
+**Tool:** Google AI Studio
+
+**Prompt evidence:** [View prompt screenshot](screenshots/lab2-ai-studio-types-prompt.png)
+
+> I am building a Next.js and TypeScript neighborhood property interface.
+>
+> Create TypeScript interfaces named Property and Sponsor.
+>
+> The Property interface must support:
+>
+> - a stable unique ID
+> - address
+> - price
+> - bedrooms
+> - bathrooms
+> - square footage
+> - property image source
+> - descriptive image alt text
+> - real property listing URL
+>
+> The Sponsor interface must support:
+>
+> - a stable unique ID
+> - business name
+> - sponsor image source
+> - descriptive image alt text
+> - business URL
+> - an optional short description
+>
+> Decide which fields must be required for the PropertyCard and SponsorBanner to render meaningful, accessible content. Use optional fields only when the component can still work correctly without that information.
+>
+> Return TypeScript interfaces only. Do not create React components, sample data, JSX, CSS, explanations, or additional files.
+
+### AI Studio Draft
+
+**Draft evidence:** [View draft screenshot](screenshots/lab2-ai-studio-types-draft.png)
+
+```ts
+export interface Property {
+  id: string;
+  address: string;
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  sqft: number;
+  imageSrc: string;
+  imageAlt: string;
+  listingUrl: string;
+}
+
+export interface Sponsor {
+  id: string;
+  businessName: string;
+  imageSrc: string;
+  imageAlt: string;
+  businessUrl: string;
+  description?: string;
+}
+```
+
+### Review and Verification
+
+- **Output used:** Accepted the `Property` and `Sponsor` interface structure, stable IDs, descriptive image-alt fields, URLs, and optional sponsor description.
+- **Output changed:** Renamed `sqft` to `squareFeet` because the complete name is clearer to developers reading the code.
+- **Output rejected:** No React components, sample data, JSX, CSS, or extra files were accepted because this step required interfaces only.
+- **Accessibility review:** Kept `imageAlt`, `listingUrl`, `businessName`, and `businessUrl` required because the future components need them to provide meaningful images and specifically named links.
+- **Verification:** `npm.cmd run lint` completed with no lint errors. `npm.cmd run build` compiled successfully and generated all four static pages.
+- **Related commit:** `Define shared Property and Sponsor types`
