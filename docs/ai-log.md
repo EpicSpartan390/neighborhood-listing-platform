@@ -196,3 +196,19 @@ export interface Sponsor {
 - **Output rejected or deferred:** Did not add extra libraries, hidden sponsorship labeling, generic link text, database features, or unverified compliance claims. Manual browser and keyboard testing remains deferred until the banner is rendered with sponsor data.
 - **Verification:** `Get-Content` confirmed the saved source. `npm.cmd run lint` completed with no errors or warnings. `npm.cmd run build` compiled successfully and generated static pages.
 - **Related commit:** `Create accessible SponsorBanner component`
+
+
+## Lab 2 SearchFilters Implementation Guidance
+
+**Tool:** ChatGPT
+
+**Request:** Provide beginner-oriented, step-by-step guidance for creating a typed and accessible `SearchFilters` form with visible labels, select controls, a submit button, custom error messaging, responsive styling, keyboard focus visibility, and an optional typed search callback.
+
+### Review and Verification
+
+- **Output used:** Used a semantic `<form>`, visible labels connected with `htmlFor` and `id`, four select controls, a submit button, typed filter values, optional `onSearch` callback, responsive grid, and visible `focus-visible` styles.
+- **Output reviewed:** Confirmed that the instructional select option does not replace the visible label and that the submit button remains keyboard operable.
+- **Accessibility behavior:** Added `aria-invalid`, `aria-describedby`, and `role="alert"` for the missing-neighborhood error. Added `role="status"` for successful submission feedback.
+- **Output rejected or deferred:** Did not add external form libraries, placeholder-only labels, mouse-only controls, or claims of completed keyboard testing. Manual testing remains deferred until the form is rendered.
+- **Verification:** `Get-Content` confirmed the saved source. `npm.cmd run lint` completed with no errors or warnings. `npm.cmd run build` compiled successfully and generated static pages.
+- **Related commit:** `Create accessible SearchFilters component`
