@@ -28,9 +28,9 @@ export default function SponsorBanner({ sponsor }: SponsorBannerProps) {
           Sponsored
         </p>
 
-        <h2 id={headingId} className="mt-2 text-2xl font-bold">
+        <h3 id={headingId} className="mt-2 text-2xl font-bold">
           {sponsor.businessName}
-        </h2>
+        </h3>
 
         {sponsor.description ? (
           <p className="mt-2 leading-7 text-slate-700">

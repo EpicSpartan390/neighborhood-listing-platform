@@ -230,3 +230,23 @@ export interface Sponsor {
 - **Accessibility review:** Wrote honest image-alt descriptions that identify each asset as an illustration and do not claim to depict the actual properties or real sponsor relationships.
 - **Verification:** Reviewed the extracted values against the instructor-provided pages. `npm.cmd run lint` completed with no errors or warnings. `npm.cmd run build` compiled successfully.
 - **Related commit:** `Add verified sample data and original illustrations`
+
+
+## Lab 2 Integration and Manual Test Guidance
+
+**Tool:** ChatGPT
+
+**Request:** Connect the reusable SearchFilters, PropertyCard, and SponsorBanner components to the homepage; apply working property filters; render sample data with stable keys; use one, two, and three-column responsive layouts; and provide beginner-oriented manual test instructions.
+
+### Review and Verification
+
+- **Output used:** Connected typed property and sponsor data to reusable components, added working search filtering, added live result feedback, and added a no-results status message.
+- **Responsive implementation:** Used `md:grid-cols-2` and `lg:grid-cols-3` for the property grid. Verified layouts at 375 px, 768 px, and 1280 px.
+- **Semantic correction:** Changed property and sponsor titles to `<h3>` beneath their section `<h2>` headings.
+- **Interactive correction:** Added a Favorite button with `onClick`, `aria-pressed`, a dynamic accessible name, and visible focus styling. Added a property-specific accessible name to the listing link.
+- **Form verification:** Confirmed the missing-neighborhood error and a valid price-filter search.
+- **Keyboard verification:** Confirmed the complete Tab order, reverse Shift+Tab navigation, Space activation of the Favorite button, Enter activation of the listing link, and visible focus rings.
+- **Evidence:** Manual results are recorded in `docs/accessibility-test-notes.md`, with screenshots in `docs/screenshots`.
+- **Automated verification:** `npm.cmd run lint` completed with no errors or warnings.
+- **Output still pending:** Lighthouse testing and the formal ChatGPT and Gemini critiques have not yet been completed.
+- **Related commit:** `Integrate responsive listings and document manual tests`
