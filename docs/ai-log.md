@@ -166,3 +166,18 @@ export interface Sponsor {
 - **Accessibility review:** Kept `imageAlt`, `listingUrl`, `businessName`, and `businessUrl` required because the future components need them to provide meaningful images and specifically named links.
 - **Verification:** `npm.cmd run lint` completed with no lint errors. `npm.cmd run build` compiled successfully and generated all four static pages.
 - **Related commit:** `Define shared Property and Sponsor types`
+
+
+## Lab 2 PropertyCard Implementation Guidance
+
+**Tool:** ChatGPT
+
+**Request:** Provide beginner-oriented, step-by-step guidance for creating a typed and accessible `PropertyCard` using the existing `Property` interface. The card needed semantic HTML, an address heading, price, property facts, descriptive image alt text, a specifically labeled listing link, responsive styling, and visible keyboard focus.
+
+### Review and Verification
+
+- **Output used:** Used a typed `property` prop, semantic `<article>`, associated address heading, Next.js image component, formatted price, property-facts list, descriptive listing link, responsive image sizing, and `focus-visible` styles.
+- **Output reviewed:** Confirmed that the link names the specific property and that the article is associated with its heading through `aria-labelledby`.
+- **Output rejected or deferred:** Did not add extra libraries, database features, authentication, a generic “Click here” label, or unverified accessibility claims. Manual browser and keyboard testing remains deferred until the card is rendered with sample data.
+- **Verification:** `Get-Content` confirmed the saved source. `npm.cmd run lint` completed with no errors or warnings. `npm.cmd run build` compiled successfully and generated static pages.
+- **Related commit:** `Create accessible PropertyCard component`
