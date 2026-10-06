@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#e0f2fe" />
+  <circle cx="320" cy="180" r="135" fill="#bae6fd" />
+
+  <g transform="rotate(-40 320 180)">
+    <rect
+      x="300"
+      y="85"
+      width="40"
+      height="220"
+      rx="20"
+      fill="#475569"
+    />
+    <rect
+      x="255"
+      y="60"
+      width="130"
+      height="48"
+      rx="12"
+      fill="#0f172a"
+    />
+  </g>
+
+  <g transform="rotate(40 320 180)">
+    <rect
+      x="302"
+      y="95"
+      width="36"
+      height="210"
+      rx="18"
+      fill="#f59e0b"
+    />
+    <path
+      d="M275 65 H365 L380 105 H260 Z"
+      fill="#b45309"
+    />
+  </g>
+
+  <rect x="0" y="315" width="640" height="45" fill="#0f172a" />
+</svg>

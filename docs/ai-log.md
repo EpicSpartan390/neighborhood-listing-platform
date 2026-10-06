@@ -212,3 +212,21 @@ export interface Sponsor {
 - **Output rejected or deferred:** Did not add external form libraries, placeholder-only labels, mouse-only controls, or claims of completed keyboard testing. Manual testing remains deferred until the form is rendered.
 - **Verification:** `Get-Content` confirmed the saved source. `npm.cmd run lint` completed with no errors or warnings. `npm.cmd run build` compiled successfully and generated static pages.
 - **Related commit:** `Create accessible SearchFilters component`
+
+
+## Lab 2 Property Data Extraction and Demo Assets
+
+**Tool:** ChatGPT with web access
+
+**Request:** Extract the address, price, bedroom count, total bathroom count, square footage, and source URL from the three instructor-provided Realtor.com listings. Do not invent missing values or treat publicly visible listing photographs as permission to republish them.
+
+### Review and Verification
+
+- **Output used:** Used the verified address, price, bedroom count, total bathroom count, square footage, and original Realtor.com URL for each property.
+- **Source date:** Listing values were checked on October 6, 2026. The source URLs are stored in `src/data/properties.ts` because live listing information may change.
+- **Output excluded:** Excluded agent information, mortgage estimates, listing descriptions, unrelated page content, and Realtor.com photographs.
+- **Image decision:** Created an original local property-placeholder SVG instead of copying listing photographs without explicit reuse permission.
+- **Sponsor decision:** Created two clearly identified fictional demo sponsors and two original SVG illustrations because the promised sponsor assets were not provided.
+- **Accessibility review:** Wrote honest image-alt descriptions that identify each asset as an illustration and do not claim to depict the actual properties or real sponsor relationships.
+- **Verification:** Reviewed the extracted values against the instructor-provided pages. `npm.cmd run lint` completed with no errors or warnings. `npm.cmd run build` compiled successfully.
+- **Related commit:** `Add verified sample data and original illustrations`
