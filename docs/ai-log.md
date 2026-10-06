@@ -181,3 +181,18 @@ export interface Sponsor {
 - **Output rejected or deferred:** Did not add extra libraries, database features, authentication, a generic “Click here” label, or unverified accessibility claims. Manual browser and keyboard testing remains deferred until the card is rendered with sample data.
 - **Verification:** `Get-Content` confirmed the saved source. `npm.cmd run lint` completed with no errors or warnings. `npm.cmd run build` compiled successfully and generated static pages.
 - **Related commit:** `Create accessible PropertyCard component`
+
+
+## Lab 2 SponsorBanner Implementation Guidance
+
+**Tool:** ChatGPT
+
+**Request:** Provide beginner-oriented, step-by-step guidance for creating a typed and accessible `SponsorBanner` using the existing `Sponsor` interface. The banner needed a visible sponsored label, descriptive image alt text, an identifiable business link, responsive styling, and keyboard focus visibility.
+
+### Review and Verification
+
+- **Output used:** Used a typed `sponsor` prop, semantic `<aside>`, visible `Sponsored` label, associated business heading, Next.js image component, optional description handling, specifically named business link, responsive layout, and `focus-visible` styles.
+- **Output reviewed:** Confirmed that sponsored content is visibly identified and that the link’s accessible name includes the business name.
+- **Output rejected or deferred:** Did not add extra libraries, hidden sponsorship labeling, generic link text, database features, or unverified compliance claims. Manual browser and keyboard testing remains deferred until the banner is rendered with sponsor data.
+- **Verification:** `Get-Content` confirmed the saved source. `npm.cmd run lint` completed with no errors or warnings. `npm.cmd run build` compiled successfully and generated static pages.
+- **Related commit:** `Create accessible SponsorBanner component`
