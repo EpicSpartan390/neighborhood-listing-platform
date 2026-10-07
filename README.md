@@ -25,3 +25,25 @@ Install the project packages:
 
 ```text
 npm install
+```
+
+## Lab 2 Component Hierarchy
+
+The Lab 2 interface will use reusable, typed components. The page will provide
+search controls, a responsive property grid, individual property cards, and
+clearly identified sponsored content.
+
+```text
+Home Page
+├── SearchFilters
+├── Listing Grid
+│   ├── PropertyCard
+│   ├── PropertyCard
+│   └── PropertyCard
+└── SponsorBanner
+```
+
+Shared data types:
+
+- `Property` defines the information required by each property card.
+- `Sponsor` defines the information required by the sponsor banner.
