@@ -250,3 +250,71 @@ export interface Sponsor {
 - **Automated verification:** `npm.cmd run lint` completed with no errors or warnings.
 - **Output still pending:** Lighthouse testing and the formal ChatGPT and Gemini critiques have not yet been completed.
 - **Related commit:** `Integrate responsive listings and document manual tests`
+
+## Lab 2 ChatGPT PropertyCard Critique
+
+**Tool:** ChatGPT
+
+**Prompt evidence:** [View ChatGPT critique prompt](screenshots/lab2-chatgpt-critique-prompt.png)
+
+**Response evidence:** [View ChatGPT critique response](screenshots/lab2-chatgpt-critique-response.png)
+
+### Prompt
+
+> Review my current `src/components/PropertyCard.tsx` implementation from this conversation for semantic HTML, WCAG-oriented keyboard access, responsive behavior, and TypeScript safety.
+>
+> Return:
+>
+> 1. confirmed strengths,
+> 2. issue,
+> 3. why it matters,
+> 4. smallest recommended change,
+> 5. a manual test for each recommendation.
+>
+> Check the article landmark, heading hierarchy, dynamic image alternative text, Favorite button state and accessible name, listing-link accessible name, keyboard focus classes, responsive classes, and typed Property prop.
+>
+> Treat the implementation as an AI-generated draft. Do not claim WCAG compliance from code alone. Distinguish actual code issues from items that require browser or assistive-technology testing. Do not add libraries, backend services, authentication, or unrelated features.
+
+### Critique Results
+
+**Confirmed strengths:**
+
+- The property card uses an `<article>` semantic root with `aria-labelledby`.
+- The property address uses an `<h3>`, which fits beneath the page section’s `<h2>`.
+- The image alternative text is built dynamically from typed property data.
+- The Favorite control is a native `<button>` with `type="button"`, an `onClick` handler, `aria-pressed`, and a property-specific accessible name.
+- The listing is a native link with an accessible name that identifies the property.
+- Both interactive controls include visible `focus-visible` ring classes.
+- The component receives a typed `Property` prop.
+- The image and control layout includes responsive classes.
+
+**Issue identified:**
+
+The component created the image alternative with the property address followed by `property.imageAlt`, but the original `imageAlt` data also contained part of the address. This could cause a screen reader to announce repetitive information.
+
+**Why it matters:**
+
+Alternative text should communicate the image’s purpose concisely. Repeating the property address makes the announcement longer without adding useful information.
+
+**Smallest recommended change:**
+
+Keep the dynamic address interpolation in `PropertyCard.tsx`, but change each data-level `imageAlt` value so that it describes only the illustration.
+
+**Recommended manual test:**
+
+Inspect the rendered `<img>` element in the browser and confirm that its final `alt` value contains the property address once followed by a useful visual description.
+
+### Evaluation and Verification
+
+- **Output used:** Accepted the recommendation to simplify the three `imageAlt` data values while retaining the dynamically interpolated property address.
+- **Output changed:** Each property now uses the visual description `Illustrated placeholder showing a white house with a green roof, trees, and a sun`.
+- **Output deferred:** A configurable heading-level prop was not added because `<h3>` is correct in the current page hierarchy. It would be reconsidered only if the component is reused under a different document outline.
+- **Output rejected:** No libraries, persistent Favorite storage, backend services, authentication, or unrelated features were added.
+- **Lint verification:** `npm.cmd run lint` completed with no errors.
+- **Browser verification:** The first rendered image contained the following value:
+
+`alt="1221 Minorca Dr, Pacific Palisades, CA 90272: Illustrated placeholder showing a white house with a green roof, trees, and a sun"`
+
+The property address appeared once, followed by the visual description. This recommendation was verified in the browser. The critique was not treated as proof of complete WCAG compliance.
+
+**Related commit:** `Apply verified ChatGPT accessibility critique`

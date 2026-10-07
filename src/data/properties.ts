@@ -10,7 +10,7 @@ export const properties: Property[] = [
     squareFeet: 8_472,
     imageSrc: "/property-placeholder.svg",
     imageAlt:
-      "Illustrated house placeholder for the 1221 Minorca Drive listing",
+      "Illustrated placeholder showing a white house with a green roof, trees, and a sun",
     listingUrl:
       "https://www.realtor.com/realestateandhomes-detail/1221-Minorca-Dr_Pacific-Palisades_CA_90272_M26930-01342",
   },
@@ -23,7 +23,7 @@ export const properties: Property[] = [
     squareFeet: 2_952,
     imageSrc: "/property-placeholder.svg",
     imageAlt:
-      "Illustrated house placeholder for the 1492 Paseo De Oro listing",
+      "Illustrated placeholder showing a white house with a green roof, trees, and a sun",
     listingUrl:
       "https://www.realtor.com/realestateandhomes-detail/1492-Paseo-De-Oro_Pacific-Palisades_CA_90272_M12211-34305",
   },
@@ -36,7 +36,7 @@ export const properties: Property[] = [
     squareFeet: 16_773,
     imageSrc: "/property-placeholder.svg",
     imageAlt:
-      "Illustrated house placeholder for the 1550 Amalfi Drive listing",
+      "Illustrated placeholder showing a white house with a green roof, trees, and a sun",
     listingUrl:
       "https://www.realtor.com/realestateandhomes-detail/1550-Amalfi-Dr_Pacific-Palisades_CA_90272_M11354-53513",
   },
