@@ -97,3 +97,7 @@ Lighthouse was run in Google Chrome using Navigation mode, Desktop device settin
 - **Manual-review items:** Lighthouse listed ten additional areas that automated testing cannot fully verify. Keyboard focus, purpose and state, tab order, visual/DOM order, focus trapping, landmarks, labels, and ARIA behavior were reviewed manually as documented above.
 
 **Lighthouse evidence:** [View accessibility score screenshot](screenshots/lab2-lighthouse-accessibility-100.png)
+
+## AI Critique Completion
+
+The formal ChatGPT and Gemini critiques are complete. Their recommendations, evaluation decisions, accepted changes, rejected suggestions, and browser verification are recorded in `docs/ai-log.md`.

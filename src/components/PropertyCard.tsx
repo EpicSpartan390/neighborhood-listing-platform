@@ -61,9 +61,9 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             onClick={handleFavoriteClick}
             aria-pressed={isFavorite}
             aria-label={
-              isFavorite
-                ? `Remove ${property.address} from favorites`
-                : `Add ${property.address} to favorites`
+            isFavorite
+            ? `Saved: remove ${property.address} from favorites`
+           : `Save property: add ${property.address} to favorites`
             }
             className="inline-flex justify-center rounded-md border border-emerald-400 px-4 py-2 font-semibold text-emerald-300 hover:bg-emerald-400 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
           >

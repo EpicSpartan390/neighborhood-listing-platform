@@ -318,3 +318,101 @@ Inspect the rendered `<img>` element in the browser and confirm that its final `
 The property address appeared once, followed by the visual description. This recommendation was verified in the browser. The critique was not treated as proof of complete WCAG compliance.
 
 **Related commit:** `Apply verified ChatGPT accessibility critique`
+
+## Lab 2 Gemini PropertyCard Critique
+
+**Tool:** Gemini
+
+**Prompt evidence:** [View Gemini critique prompt](screenshots/lab2-gemini-critique-prompt.png)
+
+**Response evidence:**
+
+- [View Gemini critique response, part 1](screenshots/lab2-gemini-critique-response.png)
+- [View Gemini critique response, part 2](screenshots/lab2-gemini-critique-response-2.png)
+
+### Prompt
+
+> Review the React TypeScript PropertyCard component that I will paste below.
+>
+> Focus specifically on:
+>
+> - semantic HTML and the article landmark
+> - heading hierarchy
+> - image alternative text
+> - keyboard access
+> - the Favorite button's visible text, accessible name, and aria-pressed state
+> - the property listing link's accessible name
+> - visible focus styles
+> - responsive behavior
+> - TypeScript prop safety
+>
+> For every recommendation, return:
+>
+> 1. issue,
+> 2. why it matters,
+> 3. smallest recommended change,
+> 4. manual browser or assistive-technology test.
+>
+> Separate confirmed code strengths from actual code problems and items that require manual testing. Treat this as an AI-generated draft. Do not claim WCAG compliance from source code alone. Do not recommend new libraries, authentication, backend services, databases, or unrelated features.
+
+### Critique Results
+
+**Confirmed strengths:**
+
+- The component uses an `<article>` associated with its heading through `aria-labelledby`.
+- Native `<button>` and `<a>` elements provide built-in keyboard behavior.
+- Interactive controls include visible `focus-visible` ring classes.
+- Next.js `Image`, responsive `sizes`, and Tailwind layout classes support responsive rendering.
+- `Intl.NumberFormat` formats the property price.
+
+**Issue accepted:**
+
+Gemini identified that the Favorite button's original accessible names did not contain the complete visible labels. The visible text was `Save property` or `Saved`, while the original `aria-label` began with `Add` or `Remove`.
+
+**Why it matters:**
+
+Speech-control users may try to activate a control by saying its visible label. Including the visible label in the accessible name makes the visible and programmatic labels agree.
+
+**Smallest implemented change:**
+
+The underlying recommendation was accepted, but its suggested implementation was adapted. The property-specific `aria-label` was retained and changed so it begins with the visible button text:
+
+- `Save property: add [address] to favorites`
+- `Saved: remove [address] from favorites`
+
+This preserved the visible `Saved` state, property-specific context, and `aria-pressed` behavior.
+
+### Suggestions Rejected or Deferred
+
+**Removing the listing-link accessible name was rejected.**
+
+Gemini suggested relying only on the visible text `View listing`. This would give all three property links the same accessible name. The current name begins with the visible words `View listing` and adds the property address, allowing links to be distinguished when reviewed outside the surrounding card context.
+
+**The TypeScript safety warning was rejected as not applicable.**
+
+Gemini warned that `imageAlt` or `listingUrl` might be optional in the external type. The actual `Property` interface was reviewed, and all fields required by `PropertyCard` are required rather than optional. A generic image fallback was therefore not added.
+
+**Additional libraries and unrelated features were rejected.**
+
+No library, database, authentication system, backend service, or persistent Favorite storage was added.
+
+### Verification
+
+- `npm.cmd run lint` completed with no errors.
+- The button was reached with the keyboard and displayed its existing visible focus ring.
+- Before activation, the browser rendered:
+
+- `aria-pressed="false"`
+- `aria-label="Save property: add 1221 Minorca Dr, Pacific Palisades, CA 90272 to favorites"`
+- Visible text: `Save property`
+
+- Pressing `Space` activated the button.
+- After activation, the browser rendered:
+
+- `aria-pressed="true"`
+- `aria-label="Saved: remove 1221 Minorca Dr, Pacific Palisades, CA 90272 from favorites"`
+- Visible text: `Saved`
+
+The visible button label was present at the beginning of each accessible name. The source review and browser test were not treated as proof of complete WCAG compliance.
+
+**Related commit:** `Apply verified Gemini accessibility critique`
