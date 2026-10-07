@@ -87,4 +87,13 @@ No unexpected keyboard or responsive-layout failures were observed during these 
 
 The empty-neighborhood submission intentionally produced the expected validation error.
 
-Lighthouse accessibility testing and the formal ChatGPT and Gemini critiques are still pending and must not be reported as completed.
+## Lighthouse Accessibility Audit
+
+Lighthouse was run in Google Chrome using Navigation mode, Desktop device settings, and the Accessibility category.
+
+- **Accessibility score:** 100
+- **Failed automated accessibility audits:** None
+- **Run warning:** Lighthouse reported that stored IndexedDB data could affect loading-performance results. This warning did not reduce the Accessibility score and was not an accessibility failure.
+- **Manual-review items:** Lighthouse listed ten additional areas that automated testing cannot fully verify. Keyboard focus, purpose and state, tab order, visual/DOM order, focus trapping, landmarks, labels, and ARIA behavior were reviewed manually as documented above.
+
+**Lighthouse evidence:** [View accessibility score screenshot](screenshots/lab2-lighthouse-accessibility-100.png)
