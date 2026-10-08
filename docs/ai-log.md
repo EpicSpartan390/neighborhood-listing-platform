@@ -416,3 +416,93 @@ No library, database, authentication system, backend service, or persistent Favo
 The visible button label was present at the beginning of each accessible name. The source review and browser test were not treated as proof of complete WCAG compliance.
 
 **Related commit:** `Apply verified Gemini accessibility critique`
+
+ ## Lab 3: Google AI Studio Structured Data Generation and Validation
+
+**Date:** October 8, 2026
+**Tool and model:** Google AI Studio — Gemini 3.8 Flash
+**Configuration:** Structured outputs enabled; Google Search, Code execution, Function calling, Google Maps, and URL context disabled.
+
+### Purpose
+
+Gemini was used to generate five entirely fictional Southern California property records for course testing. The generated data was treated as an untrusted AI draft and validated against the project’s authoritative JSON Schemas before use.
+
+### Generation Prompt
+
+> Generate one synthetic property dataset containing exactly five fictional residential properties in Southern California.
+>
+> Requirements:
+>
+> - All records, street addresses, descriptions, and property details must be invented for this course lab.
+> - Do not copy, retrieve, or represent actual real-estate listings.
+> - Set `_metadata.synthetic` to `true`.
+> - Use the exact metadata values required by the output schema.
+> - Produce exactly five records.
+> - Use each permitted `property_id` exactly once, in numerical order from ending `0001` through `0005`.
+> - Pair those records with each permitted `listing_url` exactly once, in order from `property-1` through `property-5`.
+> - Give every property a different fictional street address and use a plausible Southern California city, California ZIP code, price, bedroom count, bathroom count, and square footage.
+> - Make the five properties meaningfully varied in size, price, city, and amenities.
+> - Use only amenities allowed by the schema, with no duplicate amenity within a record.
+> - Use `/property-placeholder.svg` for every property image.
+> - Write useful, concise image alternative text describing the fictional home.
+> - Include one or two fictional sponsors per property.
+> - Keep each sponsor’s ID, name, URL, and image logically matched.
+> - Clearly identify each sponsor as fictional in its description.
+> - Do not include commentary, citations, Markdown, code fences, or fields not defined by the structured-output schema.
+> - Return only the structured JSON result required by the active schema.
+
+### AI Studio Schema Adjustments
+
+The authoritative Draft 2020-12 schemas were not changed or weakened.
+
+A separate `schemas/ai-studio-output.schema.json` helper was created because AI Studio accepts a narrower and complexity-limited schema. AI Studio first rejected `additionalProperties` and `title` in its editor. After those helper-only keywords were removed, inference returned a constraint-complexity error:
+
+> Constraint is too tall: 8380 (vs max of 5888)
+
+The AI Studio helper schema was simplified by removing its long enum lists and descriptions. The strict enum, format, range, required-field, and unexpected-property rules remained in the authoritative Ajv schemas.
+
+### Initial AI Output and Validation Failure
+
+The untouched output was preserved as:
+
+`data/generated/synthetic-properties.raw.json`
+
+The JSON passed syntax parsing, but strict Ajv validation found 19 contract violations. All violations were amenity values written as human-readable phrases instead of the permitted enum values.
+
+Examples included:
+
+- `Attached Garage` instead of `GARAGE_PARKING`
+- `Central Air Conditioning` instead of `AIR_CONDITIONING`
+- `Solar Panels` instead of `SOLAR_PANELS`
+- `Swimming Pool` instead of `SWIMMING_POOL`
+- `EV Charging Station` instead of `EV_CHARGING`
+
+Unsupported values such as `Hardwood Floors`, `Backyard Patio`, `Wine Cellar`, and `Private Courtyard` were also rejected.
+
+This demonstrated that syntactically valid JSON is not necessarily valid application data.
+
+### Human Review and Corrections
+
+Only the amenities arrays were corrected. The generated metadata, IDs, addresses, numerical property details, image information, listing URLs, and sponsor information were retained.
+
+| Property | Corrected amenities |
+|---|---|
+| 1 | `GARAGE_PARKING`, `AIR_CONDITIONING` |
+| 2 | `GARAGE_PARKING` |
+| 3 | `SOLAR_PANELS` |
+| 4 | `SWIMMING_POOL`, `EV_CHARGING` |
+| 5 | `AIR_CONDITIONING` |
+
+The reviewed dataset was saved as:
+
+`data/generated/synthetic-properties.json`
+
+### Verification
+
+- `npm.cmd run validate:data` reported: `PASS: The AI-generated dataset satisfies the data contract.`
+- `node scripts/check-schemas.mjs` confirmed that both schemas are valid Draft 2020-12 schemas and that the dataset schema resolves its property-schema reference.
+- `npm.cmd run lint` completed without errors.
+- The original AI output remains available separately for comparison and audit evidence.
+- The AI Studio structured-output screenshot is stored at `docs/ai-studio-structured-output.png`.
+
+**Related commit:** `feat: add validated synthetic property dataset`
