@@ -1,14 +1,25 @@
 import { readFileSync } from "node:fs";
 
+import type { AnySchema, ErrorObject } from "ajv";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 
-function readJson(relativePath) {
-  const fileUrl = new URL(relativePath, import.meta.url);
-  return JSON.parse(readFileSync(fileUrl, "utf8"));
+interface GeneratedRecord {
+  property_id?: string;
+  [key: string]: unknown;
 }
 
-function formatError(error) {
+interface GeneratedDataset {
+  records?: GeneratedRecord[];
+  [key: string]: unknown;
+}
+
+function readJson<T>(relativePath: string): T {
+  const fileUrl = new URL(relativePath, import.meta.url);
+  return JSON.parse(readFileSync(fileUrl, "utf8")) as T;
+}
+
+function formatError(error: ErrorObject): string {
   const location = error.instancePath || "/";
   let details = "";
 
@@ -22,9 +33,13 @@ function formatError(error) {
   return `${location}: ${error.message}.${details}`;
 }
 
-const propertySchema = readJson("../schemas/property.schema.json");
-const datasetSchema = readJson("../schemas/property-dataset.schema.json");
-const generatedData = readJson(
+const propertySchema = readJson<AnySchema>(
+  "../schemas/property.schema.json",
+);
+const datasetSchema = readJson<AnySchema>(
+  "../schemas/property-dataset.schema.json",
+);
+const generatedData = readJson<GeneratedDataset>(
   "../data/generated/synthetic-properties.json",
 );
 
