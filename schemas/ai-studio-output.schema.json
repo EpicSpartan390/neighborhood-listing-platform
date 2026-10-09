@@ -1,0 +1,149 @@
+{
+  "type": "object",
+  "properties": {
+    "_metadata": {
+      "type": "object",
+      "properties": {
+        "synthetic": {
+          "type": "boolean"
+        },
+        "schema_version": {
+          "type": "string"
+        },
+        "generated_by": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "synthetic",
+        "schema_version",
+        "generated_by",
+        "purpose"
+      ]
+    },
+    "records": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "type": "string"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "street": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "street",
+              "city",
+              "state"
+            ]
+          },
+          "zip_code": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "bedrooms": {
+            "type": "integer"
+          },
+          "bathrooms": {
+            "type": "number"
+          },
+          "square_feet": {
+            "type": "integer"
+          },
+          "amenities": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 6,
+            "items": {
+              "type": "string"
+            }
+          },
+          "image_src": {
+            "type": "string"
+          },
+          "image_alt": {
+            "type": "string"
+          },
+          "listing_url": {
+            "type": "string"
+          },
+          "local_sponsors": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "items": {
+              "type": "object",
+              "properties": {
+                "sponsor_id": {
+                  "type": "string"
+                },
+                "business_name": {
+                  "type": "string"
+                },
+                "tier": {
+                  "type": "string"
+                },
+                "target_url": {
+                  "type": "string"
+                },
+                "image_src": {
+                  "type": "string"
+                },
+                "image_alt": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "sponsor_id",
+                "business_name",
+                "tier",
+                "target_url",
+                "image_src",
+                "image_alt"
+              ]
+            }
+          }
+        },
+        "required": [
+          "property_id",
+          "address",
+          "zip_code",
+          "price",
+          "bedrooms",
+          "bathrooms",
+          "square_feet",
+          "amenities",
+          "image_src",
+          "image_alt",
+          "listing_url",
+          "local_sponsors"
+        ]
+      }
+    }
+  },
+  "required": [
+    "_metadata",
+    "records"
+  ]
+}
