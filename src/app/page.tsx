@@ -71,8 +71,8 @@ export default function Home() {
                 Featured listings
               </h2>
               <p className="mt-2 text-slate-300">
-                Property information was gathered from the
-                instructor-provided listing sources.
+                Property information comes from validated, fictional course-lab
+                seed data.
               </p>
             </div>
 

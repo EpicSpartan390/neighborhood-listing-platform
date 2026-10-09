@@ -5,7 +5,12 @@ import invalidMissingId from "../data/fixtures/invalid-missing-id.json";
 import invalidNegativePrice from "../data/fixtures/invalid-negative-price.json";
 import invalidUnknownField from "../data/fixtures/invalid-unknown-field.json";
 import validListing from "../data/fixtures/valid-listing.json";
-import { validateProperty } from "../src/validator/validateProperty";
+import generatedDataset from "../data/generated/synthetic-properties.json";
+import rawGeneratedDataset from "../data/generated/synthetic-properties.raw.json";
+import {
+  validateProperty,
+  validatePropertyDataset,
+} from "../src/validator/validateProperty";
 
 describe("property data contract", () => {
   it("accepts a valid property listing", () => {
@@ -98,6 +103,41 @@ describe("property data contract", () => {
           params: expect.objectContaining({
             additionalProperty: "internal_note",
           }),
+        }),
+      ]),
+    );
+  });
+});
+
+describe("property dataset contract", () => {
+  it("accepts the reviewed synthetic dataset", () => {
+    const result = validatePropertyDataset(generatedDataset);
+
+    expect(result.valid).toBe(true);
+
+    if (!result.valid) {
+      throw new Error("Expected the reviewed dataset to pass.");
+    }
+
+    expect(result.errors).toEqual([]);
+    expect(result.data.records).toHaveLength(5);
+    expect(result.data._metadata.synthetic).toBe(true);
+  });
+
+  it("rejects the untouched AI-generated dataset", () => {
+    const result = validatePropertyDataset(rawGeneratedDataset);
+
+    expect(result.valid).toBe(false);
+
+    if (result.valid) {
+      throw new Error("Expected the raw AI dataset to fail.");
+    }
+
+    expect(result.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          instancePath: "/records/0/amenities/0",
+          keyword: "enum",
         }),
       ]),
     );

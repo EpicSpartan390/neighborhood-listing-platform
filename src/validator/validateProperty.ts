@@ -1,7 +1,8 @@
-import type { ErrorObject } from "ajv";
+import type { ErrorObject, ValidateFunction } from "ajv";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 
+import datasetSchema from "../../schemas/property-dataset.schema.json";
 import propertySchema from "../../schemas/property.schema.json";
 
 export type PropertyAmenity =
@@ -45,10 +46,22 @@ export interface PropertyContract {
   local_sponsors: PropertyContractSponsor[];
 }
 
-export type PropertyValidationResult =
+export interface PropertyDatasetMetadata {
+  synthetic: true;
+  schema_version: "1.0.0";
+  generated_by: "Google AI Studio";
+  purpose: "Course lab seed fixtures only";
+}
+
+export interface PropertyDataset {
+  _metadata: PropertyDatasetMetadata;
+  records: PropertyContract[];
+}
+
+export type ContractValidationResult<T> =
   | {
       valid: true;
-      data: PropertyContract;
+      data: T;
       errors: [];
     }
   | {
@@ -62,14 +75,26 @@ const ajv = new Ajv2020({
 });
 
 addFormats(ajv);
+ajv.addSchema(propertySchema);
 
 const validatePropertySchema =
-  ajv.compile<PropertyContract>(propertySchema);
+  ajv.getSchema<PropertyContract>(propertySchema.$id);
 
-export function validateProperty(
+if (!validatePropertySchema) {
+  throw new Error("The property schema could not be compiled.");
+}
+
+const propertyValidator: ValidateFunction<PropertyContract> =
+  validatePropertySchema;
+
+const validateDatasetSchema =
+  ajv.compile<PropertyDataset>(datasetSchema);
+
+function createResult<T>(
+  validator: ValidateFunction<T>,
   value: unknown,
-): PropertyValidationResult {
-  if (validatePropertySchema(value)) {
+): ContractValidationResult<T> {
+  if (validator(value)) {
     return {
       valid: true,
       data: value,
@@ -78,7 +103,7 @@ export function validateProperty(
   }
 
   const errors =
-    validatePropertySchema.errors?.map((error) => ({
+    validator.errors?.map((error) => ({
       ...error,
       params: { ...error.params },
     })) ?? [];
@@ -87,4 +112,16 @@ export function validateProperty(
     valid: false,
     errors,
   };
+}
+
+export function validateProperty(
+  value: unknown,
+): ContractValidationResult<PropertyContract> {
+  return createResult(propertyValidator, value);
+}
+
+export function validatePropertyDataset(
+  value: unknown,
+): ContractValidationResult<PropertyDataset> {
+  return createResult(validateDatasetSchema, value);
 }
