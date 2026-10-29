@@ -416,3 +416,9 @@ No library, database, authentication system, backend service, or persistent Favo
 The visible button label was present at the beginning of each accessible name. The source review and browser test were not treated as proof of complete WCAG compliance.
 
 **Related commit:** `Apply verified Gemini accessibility critique`
+
+## Midterm Examination AI Provenance
+
+| Step / Tool | Prompt Summary | Model Output Used | Model Output Rejected & Rationale | Verification Method | Associated Git Commit |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Exam setup / ChatGPT and Codex | Simplify the midterm instructions and establish the examination branch inside the existing Neighborhood Listing Platform repository. | Used the clean-branch workflow, environment-ignore review, existing-project inspection, and implementation-handoff review. | Rejected using the generated course-workspace scaffold as the submission repository because the established working project already exists at `C:\Users\pedro\neighborhood-listing-platform`. The generated code will be used only as a reference and selectively integrated. | Verified the GitHub remote, clean starting state, latest `main`, pushed exam branch, existing Lab 2 implementation, and separate Lab 3 commits. | `898dd21` |
