@@ -34,6 +34,6 @@ As a platform administrator, I want full override authority across all examinati
 - **Given** a trusted server process using the server-only service-role credential, **when** it performs an authorized compliance operation, **then** it can bypass RLS without exposing the credential to a browser bundle.
 - **Given** a non-admin user, **when** that user attempts an administrator-only operation, **then** PostgreSQL denies it.
 
-**Traceability:** [administrator policies and helper function](../supabase/migrations/20261029140000_exam_schema_persistence.sql) and [server-only Supabase clients](../src/lib/supabaseServer.ts).
+**Traceability:** [administrator policies and helper function](../supabase/migrations/20261029140000_exam_schema_persistence.sql), [security-hardening migration](../supabase/migrations/20261029150000_exam_security_hardening.sql), [authenticated-user Supabase client](../src/lib/supabaseServer.ts), and [isolated service-role client](../src/lib/supabaseAdmin.ts).
 
 
