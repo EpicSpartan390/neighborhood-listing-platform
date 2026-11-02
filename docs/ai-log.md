@@ -58,14 +58,14 @@ Next.js is a framework built around React. It provides an organized structure fo
 Next.js App Router is the part of Next.js that connects web addresses to pages. It organizes pages and layouts using folders, making it possible to share elements such as headers and menus across multiple pages.
 TypeScript helps developers catch mistakes while writing JavaScript-based applications. It keeps track of the kinds of information the program expects, such as text, numbers, or user records.
 Tailwind CSS controls the visual appearance of the website. It provides small, ready-made styling options for things such as colors, spacing, text size, borders, and page layouts.
-ESLint examines the project’s source files for common mistakes and inconsistent coding practices. It helps keep the code easier to understand and maintain.
-Node.js allows JavaScript-based development tools to run on the developer’s computer and can also run parts of the website on a server.
+ESLint examines the projectâ€™s source files for common mistakes and inconsistent coding practices. It helps keep the code easier to understand and maintain.
+Node.js allows JavaScript-based development tools to run on the developerâ€™s computer and can also run parts of the website on a server.
 npm manages the software packages the project depends on. It keeps track of tools such as Next.js, React, TypeScript, Tailwind CSS, and ESLint.
 Git records changes made to the project over time. It allows developers to review earlier versions, work on changes safely, and combine work from multiple people.
 GitHub stores Git projects online. It supports collaboration, code review, issue tracking, and connections to publishing services.
 Vercel publishes the finished Next.js website on the internet. It can connect to GitHub and create an updated deployment when approved changes are added to the project.
 
-Together, React provides the reusable interface pieces, while Next.js and its App Router organize them into pages and layouts. Accessible HTML gives those pages meaningful and usable structure, Tailwind CSS controls their appearance, and TypeScript helps prevent programming mistakes. ESLint checks the quality and consistency of the source files. Node.js runs the development tools, while npm manages the packages they require. Git records the project’s history, GitHub stores and supports collaboration on that history, and Vercel turns the project into a website people can visit.
+Together, React provides the reusable interface pieces, while Next.js and its App Router organize them into pages and layouts. Accessible HTML gives those pages meaningful and usable structure, Tailwind CSS controls their appearance, and TypeScript helps prevent programming mistakes. ESLint checks the quality and consistency of the source files. Node.js runs the development tools, while npm manages the packages they require. Git records the projectâ€™s history, GitHub stores and supports collaboration on that history, and Vercel turns the project into a website people can visit.
 
 1. ChatGPT explained standard HTML and accessible HTML separately and distinguished Next.js from the Next.js App Router. Gemini combined these concepts into broader descriptions.
 
@@ -178,7 +178,7 @@ export interface Sponsor {
 
 - **Output used:** Used a typed `property` prop, semantic `<article>`, associated address heading, Next.js image component, formatted price, property-facts list, descriptive listing link, responsive image sizing, and `focus-visible` styles.
 - **Output reviewed:** Confirmed that the link names the specific property and that the article is associated with its heading through `aria-labelledby`.
-- **Output rejected or deferred:** Did not add extra libraries, database features, authentication, a generic “Click here” label, or unverified accessibility claims. Manual browser and keyboard testing remains deferred until the card is rendered with sample data.
+- **Output rejected or deferred:** Did not add extra libraries, database features, authentication, a generic â€œClick hereâ€ label, or unverified accessibility claims. Manual browser and keyboard testing remains deferred until the card is rendered with sample data.
 - **Verification:** `Get-Content` confirmed the saved source. `npm.cmd run lint` completed with no errors or warnings. `npm.cmd run build` compiled successfully and generated static pages.
 - **Related commit:** `Create accessible PropertyCard component`
 
@@ -192,7 +192,7 @@ export interface Sponsor {
 ### Review and Verification
 
 - **Output used:** Used a typed `sponsor` prop, semantic `<aside>`, visible `Sponsored` label, associated business heading, Next.js image component, optional description handling, specifically named business link, responsive layout, and `focus-visible` styles.
-- **Output reviewed:** Confirmed that sponsored content is visibly identified and that the link’s accessible name includes the business name.
+- **Output reviewed:** Confirmed that sponsored content is visibly identified and that the linkâ€™s accessible name includes the business name.
 - **Output rejected or deferred:** Did not add extra libraries, hidden sponsorship labeling, generic link text, database features, or unverified compliance claims. Manual browser and keyboard testing remains deferred until the banner is rendered with sponsor data.
 - **Verification:** `Get-Content` confirmed the saved source. `npm.cmd run lint` completed with no errors or warnings. `npm.cmd run build` compiled successfully and generated static pages.
 - **Related commit:** `Create accessible SponsorBanner component`
@@ -280,7 +280,7 @@ export interface Sponsor {
 **Confirmed strengths:**
 
 - The property card uses an `<article>` semantic root with `aria-labelledby`.
-- The property address uses an `<h3>`, which fits beneath the page section’s `<h2>`.
+- The property address uses an `<h3>`, which fits beneath the page sectionâ€™s `<h2>`.
 - The image alternative text is built dynamically from typed property data.
 - The Favorite control is a native `<button>` with `type="button"`, an `onClick` handler, `aria-pressed`, and a property-specific accessible name.
 - The listing is a native link with an accessible name that identifies the property.
@@ -294,7 +294,7 @@ The component created the image alternative with the property address followed b
 
 **Why it matters:**
 
-Alternative text should communicate the image’s purpose concisely. Repeating the property address makes the announcement longer without adding useful information.
+Alternative text should communicate the imageâ€™s purpose concisely. Repeating the property address makes the announcement longer without adding useful information.
 
 **Smallest recommended change:**
 
@@ -428,4 +428,4 @@ The midterm is being completed incrementally inside the existing Neighborhood Li
 | Requirements and traceability / Codex | Draft the three required midterm user stories and connect them to the implementation files. | Used the Property Owner, Public Inquirer, and Platform Administrator stories with Given/When/Then criteria and scope estimates. | Rejected route links that did not match the existing project's `src/app` structure. No implementation was marked complete solely because it appeared in a requirement. | Confirmed that `docs/requirements.md` contains three scoped stories and links to the migration, validation contract, API route, and property component. | `f832fac` |
 | Database schema and RLS / Codex | Draft the required PostgreSQL tables, constraints, relationships, and row-level security policies. | Used the five required tables, UUID keys, foreign keys, checks, UTC timestamps, indexes, RLS activation, public policies, owner policies, inquiry policies, and administrator policies. | Rejected claiming that the migration had executed successfully because it has not yet been applied to the connected Supabase project. No credentials or real user data were added. | Reviewed the migration file against the examination's required tables, fields, constraints, relationships, and access rules. Live Supabase execution remains pending. | `6bc4754` |
 | Security audit matrix / Codex | Draft positive and negative authorization tests for anonymous users, owners, inquirers, administrators, and trusted server access. | Used the role-based test matrix and live-verification procedure in `docs/security-audit.md`. | Rejected marking expected outcomes as verified results before running the tests with genuine Supabase user sessions. | Confirmed every live result is labeled as pending and that the matrix includes the required permitted and denied operations. | `757b558` |
-| Property validation / Codex | Implement the exam-specific runtime contract without replacing the broader Lab 3 data model. | Used a strict five-field Zod schema and eight validation tests covering valid, missing, invalid, and unknown fields. | Rejected merging the larger Lab 3 schema because its payload shape does not match the exam POST contract. Also rejected npm audit fix --force and used targeted dependency patches instead. | Eight tests passed; TypeScript passed; ESLint passed without warnings; npm audit found zero vulnerabilities; the Next.js production build passed. | `d0bb6c7` |
+| Property validation / ChatGPT and Codex | Implement the exam-specific runtime contract without replacing the broader Lab 3 data model. | Used an AJV 2020-12 strict five-field schema, a reusable validator, and 16 tests covering valid, missing, invalid, injected, and unknown fields. | The initial Zod draft was valid under the exam wording but was replaced with AJV to remain consistent with the Lab 3 validation approach. Rejected npm audit fix --force and used a tested minimatch override instead. | Sixteen tests passed; TypeScript passed; ESLint passed; npm audit found zero vulnerabilities; the Next.js production build passed. | `d0bb6c7`, `ec41dfe` |
