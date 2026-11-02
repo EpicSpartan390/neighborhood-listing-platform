@@ -7,10 +7,10 @@ This document contains the required authorization matrix and the procedure for p
 | Actor | Operation | Expected result | Verified result / evidence |
 | :--- | :--- | :--- | :--- |
 | Anonymous | Select an approved property | PASS | Pending live Supabase test |
-| Anonymous | Select a draft property | FAIL / zero rows | Pending live Supabase test |
+| Anonymous | Select a draft property | FAIL / zero rows | PASS verified 2026-11-02: public GET returned zero rows after an authenticated owner draft was created. |
 | Anonymous | Select an active sponsor | PASS | Pending live Supabase test |
 | Anonymous | Select an inactive sponsor | FAIL / zero rows | Pending live Supabase test |
-| Owner A | Insert a draft owned by Owner A | PASS | Pending live Supabase test |
+| Owner A | Insert a draft owned by Owner A | PASS | PASS verified 2026-11-02: authenticated API returned HTTP 201 and created draft b9df51e0-9a38-4af0-a6c5-e343a6469d5c with the authenticated owner ID. |
 | Owner A | Update Owner A's draft listing | PASS | Pending live Supabase test |
 | Owner A | Update Owner A's approved listing | FAIL / denied | Pending live Supabase test |
 | Owner A | Update Owner B's listing | FAIL / denied | Pending live Supabase test |
@@ -38,3 +38,13 @@ This document contains the required authorization matrix and the procedure for p
 - The service-role credential bypasses RLS. It demonstrates trusted server access, not the correctness of ordinary-user policies.
 - Browser developer tools must never show `SUPABASE_SERVICE_ROLE_KEY` in source, requests, or bundled JavaScript.
 
+
+## Applied migration and grant verification
+
+On 2026-11-02, both versioned migrations were applied to the connected Supabase project. The security-hardening migration returned `Success. No rows returned`.
+
+- RLS remained enabled on all five required tables.
+- The five tables retained 16 policies: profiles 2, sponsors 2, properties 6, property_sponsors 3, and inquiries 3.
+- All seven explicit privilege checks returned true.
+- Anonymous access can read properties and insert inquiries, but cannot insert properties or read inquiries.
+- Authenticated access can select and insert properties, but cannot truncate the properties table.
