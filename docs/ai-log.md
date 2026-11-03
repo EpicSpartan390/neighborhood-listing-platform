@@ -636,3 +636,9 @@ Inspected the student's `lab5-live-evidence.json`: completed=true, 23 of 23 chec
 **Output retained:** Added lab5-rebuild-evidence.md with exact query/results and lab5-reflection.md as a reviewable contribution/reflection draft. Updated current handoff/database-design/verification and security documentation. The reflection distinguishes Pedro's execution/verification from ChatGPT/Codex drafting and Gemini Flash-Lite review. Anderson Mejia Sanchez is identified as assigned partner, with no invented completed contribution/review. Commit/PR/review/deployment links remain pending.
 
 **Verification of this update:** Documentation-only changes; no application code, migration files, test definitions, dependencies, remote database requests, reset, commit, push, or deployment was performed here. Prior AI-log entries were preserved.
+
+## Lab 5 implementation commit
+
+Implementation commit: `25e900a` — feat: complete Lab 5 database security and listing integration.
+
+This commit contains the Lab 5 implementation, test evidence, AI-review decisions, clean-rebuild evidence, and student-reviewed reflection.
