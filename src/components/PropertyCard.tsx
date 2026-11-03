@@ -89,13 +89,15 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             {showDetails ? "Hide Details" : "View Details"}
           </button>
 
-          <a
-            href={property.listingUrl}
-            aria-label={`View listing for ${property.address}`}
-            className="inline-flex justify-center rounded-md px-4 py-2 font-semibold text-emerald-300 underline hover:text-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
-          >
-            View listing
-          </a>
+          {property.listingUrl ? (
+            <a
+              href={property.listingUrl}
+              aria-label={`View listing for ${property.address}`}
+              className="inline-flex justify-center rounded-md px-4 py-2 font-semibold text-emerald-300 underline hover:text-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+            >
+              View listing
+            </a>
+          ) : null}
         </div>
 
         <section

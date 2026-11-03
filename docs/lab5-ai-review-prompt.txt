@@ -1,0 +1,352 @@
+I am completing CIS 3610 Lab 5 in an existing Next.js/Supabase Neighborhood Listing Platform. I am a beginner and must explain and verify the final work. The two SQL migrations below already exist and were previously applied for a practical exam. We are reusing that work on feature/database; do not replace it or rerun its CREATE TABLE statements.
+
+Review this PostgreSQL schema and RLS plan as a defensive database engineer. Identify privilege escalation, ownership, validation, and cascade risks. Give executable tests, but use placeholders for all credentials.
+
+Required scope:
+- Keep the five existing tables: profiles, properties, sponsors, property_sponsors, and inquiries.
+- Public users read approved listings and active sponsors; authenticated owners can change only their own permitted unapproved records. Administrators require trusted authorization.
+- Preserve versioned migrations and fictional development data. Use a follow-up migration only if a change is justified.
+- Keep privileged keys server-only and preserve the real caller's identity for ordinary requests. Do not ask for keys, passwords, access tokens, private data, or production access.
+
+Current application context, checked from source:
+- A server-only anonymous client serves GET /api/properties, selecting id, address, price, bedrooms, bathrooms, and square_feet and filtering status='approved'.
+- POST /api/properties uses AJV to reject extra fields, verifies the authenticated user with getUser, checks the profile role, and assigns owner_id and status='draft' on the server. Ordinary routes do not use the service-role client.
+- Admin profiles have is_exam_admin()-based policies. The separately isolated service-role client bypasses RLS. Do not conflate these two mechanisms or add an admin dashboard without a requirement.
+- The existing live test helper accepts any error as a denial. It must be made strict enough that network/schema failures cannot pass as security results, and protected rows must be checked for unintended changes.
+- The homepage is still static; integrating its existing cards with the GET route is a later lab step, not a reason to redesign the schema.
+
+Questions and required output:
+1. Separate confirmed strengths, concrete defects, requirement decisions, and optional improvements. Explain the smallest justified corrections in beginner-friendly language.
+2. Inspect primary/foreign keys, required values, defaults/timestamps, check constraints, decimal precision, grants, RLS USING/WITH CHECK, profile role escalation, ownership reassignment, and deletion cascades.
+3. In particular, review that properties_owner_delete_own currently allows deletion at any status, owner UPDATE excludes pending, and public inquiry INSERT uses WITH CHECK (true). Explain which decisions actually follow from the stated lab rules. Do not broaden owner permissions automatically.
+4. Propose the minimum safe follow-up SQL migration for justified changes. Preserve prior migrations and records. Do not add tables, dependencies, auth flows, sponsor self-service ownership, or arbitrary business limits.
+5. Give executable development SQL tests or exact API test templates for anonymous, Owner A, Owner B, authenticated admin, and trusted service-role access. Include successful controls, owner reassignment/self-approval attempts, approved/cross-owner mutations, an anonymous property write, profile role escalation, and checks that denied writes leave data unchanged. Treat unexpected errors as failures, not permission denials. Explain HTTP errors versus zero visible/affected rows.
+6. For the four-role properties matrix, give one permitted and one denied operation with its actual enforcement mechanism. If a service-role operation is rejected by a constraint or server authorization, label it accordingly; do not claim RLS blocks a role that bypasses RLS.
+7. Outline the smallest reusable fictional seed and clean-development rebuild procedure. Reference existing development Auth users using placeholder UUIDs; do not invent credentials or create production users. The current live test script creates fixtures but no standalone seed/rebuild entry point was supplied.
+
+Do not execute anything or claim any test passed. State assumptions and prerequisites. Use credential placeholders only. Return findings first, proposed SQL second, and tests/verification last. ChatGPT's prior source review and the real Gemini response will be evaluated separately in the AI log; your suggestions are drafts, not automatic changes.
+
+The following is the exact current SQL, in application order.
+
+FILE: supabase/migrations/20261029140000_exam_schema_persistence.sql
+```sql
+-- Midterm practical: Property Listings & Inquiries persistence and access control.
+-- Apply once through the Supabase migration workflow.
+
+create extension if not exists pgcrypto;
+
+create table public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  role text not null check (role in ('admin', 'property_owner', 'sponsor', 'public')),
+  created_at timestamptz not null default timezone('utc'::text, now())
+);
+
+create table public.sponsors (
+  id uuid primary key default gen_random_uuid(),
+  name text not null check (char_length(name) >= 2),
+  tier text not null check (tier in ('gold', 'silver', 'bronze')),
+  active_status boolean not null default true,
+  created_at timestamptz not null default timezone('utc'::text, now())
+);
+
+create table public.properties (
+  id uuid primary key default gen_random_uuid(),
+  owner_id uuid not null references public.profiles(id) on delete restrict,
+  address text not null,
+  price numeric(12, 2) not null check (price >= 0),
+  bedrooms integer not null check (bedrooms >= 0),
+  bathrooms numeric(3, 1) not null check (bathrooms >= 0),
+  square_feet integer not null check (square_feet > 0),
+  status text not null default 'draft'
+    check (status in ('draft', 'pending', 'approved', 'rejected')),
+  created_at timestamptz not null default timezone('utc'::text, now())
+);
+
+create table public.property_sponsors (
+  property_id uuid references public.properties(id) on delete cascade,
+  sponsor_id uuid references public.sponsors(id) on delete cascade,
+  primary key (property_id, sponsor_id)
+);
+
+create table public.inquiries (
+  id uuid primary key default gen_random_uuid(),
+  property_id uuid not null references public.properties(id) on delete cascade,
+  inquirer_email text not null
+    check (inquirer_email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+  message text not null check (char_length(message) >= 10),
+  created_at timestamptz not null default timezone('utc'::text, now())
+);
+
+create index properties_owner_id_idx on public.properties(owner_id);
+create index properties_status_idx on public.properties(status);
+create index property_sponsors_sponsor_id_idx on public.property_sponsors(sponsor_id);
+create index inquiries_property_id_idx on public.inquiries(property_id);
+
+-- SECURITY DEFINER avoids recursive profiles RLS checks while evaluating admin policies.
+create or replace function public.is_exam_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  select exists (
+    select 1
+    from public.profiles
+    where id = auth.uid()
+      and role = 'admin'
+  );
+$$;
+
+revoke all on function public.is_exam_admin() from public;
+grant execute on function public.is_exam_admin() to authenticated;
+
+alter table public.profiles enable row level security;
+alter table public.sponsors enable row level security;
+alter table public.properties enable row level security;
+alter table public.property_sponsors enable row level security;
+alter table public.inquiries enable row level security;
+
+-- Profiles: users may see their own role; administrators have full audit access.
+create policy "profiles_select_own"
+on public.profiles for select
+to authenticated
+using (id = auth.uid());
+
+create policy "profiles_admin_all"
+on public.profiles for all
+to authenticated
+using (public.is_exam_admin())
+with check (public.is_exam_admin());
+
+-- Sponsors: only active sponsors are public; administrators manage all sponsors.
+create policy "sponsors_public_select_active"
+on public.sponsors for select
+to anon, authenticated
+using (active_status = true);
+
+create policy "sponsors_admin_all"
+on public.sponsors for all
+to authenticated
+using (public.is_exam_admin())
+with check (public.is_exam_admin());
+
+-- Properties: public visibility is approved-only.
+create policy "properties_public_select_approved"
+on public.properties for select
+to anon, authenticated
+using (status = 'approved');
+
+create policy "properties_owner_select_own"
+on public.properties for select
+to authenticated
+using (owner_id = auth.uid());
+
+create policy "properties_owner_insert_draft"
+on public.properties for insert
+to authenticated
+with check (
+  owner_id = auth.uid()
+  and status = 'draft'
+  and exists (
+    select 1
+    from public.profiles
+    where id = auth.uid()
+      and role = 'property_owner'
+  )
+);
+
+create policy "properties_owner_update_unapproved"
+on public.properties for update
+to authenticated
+using (
+  owner_id = auth.uid()
+  and status in ('draft', 'rejected')
+)
+with check (
+  owner_id = auth.uid()
+  and status in ('draft', 'rejected')
+);
+
+create policy "properties_owner_delete_own"
+on public.properties for delete
+to authenticated
+using (owner_id = auth.uid());
+
+create policy "properties_admin_all"
+on public.properties for all
+to authenticated
+using (public.is_exam_admin())
+with check (public.is_exam_admin());
+
+-- Sponsor links reveal only approved properties connected to active sponsors.
+create policy "property_sponsors_public_select_approved"
+on public.property_sponsors for select
+to anon, authenticated
+using (
+  exists (
+    select 1
+    from public.properties
+    where properties.id = property_sponsors.property_id
+      and properties.status = 'approved'
+  )
+  and exists (
+    select 1
+    from public.sponsors
+    where sponsors.id = property_sponsors.sponsor_id
+      and sponsors.active_status = true
+  )
+);
+
+create policy "property_sponsors_owner_select_own"
+on public.property_sponsors for select
+to authenticated
+using (
+  exists (
+    select 1
+    from public.properties
+    where properties.id = property_sponsors.property_id
+      and properties.owner_id = auth.uid()
+  )
+);
+
+create policy "property_sponsors_admin_all"
+on public.property_sponsors for all
+to authenticated
+using (public.is_exam_admin())
+with check (public.is_exam_admin());
+
+-- Anyone can submit an inquiry. No general SELECT policy is defined.
+create policy "inquiries_public_insert"
+on public.inquiries for insert
+to anon, authenticated
+with check (true);
+
+create policy "inquiries_property_owner_select"
+on public.inquiries for select
+to authenticated
+using (
+  exists (
+    select 1
+    from public.properties
+    where properties.id = inquiries.property_id
+      and properties.owner_id = auth.uid()
+  )
+);
+
+create policy "inquiries_admin_all"
+on public.inquiries for all
+to authenticated
+using (public.is_exam_admin())
+with check (public.is_exam_admin());
+
+-- SQL privileges and RLS work together: grants permit an operation category;
+-- policies decide which rows each actor may access.
+grant usage on schema public to anon, authenticated;
+grant select on public.properties, public.sponsors, public.property_sponsors to anon;
+grant insert on public.inquiries to anon;
+
+grant select, insert, update, delete
+  on public.profiles,
+     public.sponsors,
+     public.properties,
+     public.property_sponsors,
+     public.inquiries
+  to authenticated;
+```
+
+FILE: supabase/migrations/20261029150000_exam_security_hardening.sql
+```sql
+-- Follow-up to the already committed examination migration. No data is deleted.
+begin;
+
+-- Fully qualified names in this helper permit an empty, fixed search path.
+alter function public.is_exam_admin() set search_path = '';
+revoke all on function public.is_exam_admin() from public, anon;
+grant execute on function public.is_exam_admin() to authenticated, service_role;
+
+-- Remove inherited default API privileges, including TRUNCATE/REFERENCES/TRIGGER.
+-- RLS does not protect TRUNCATE. Grant only operations used by this subsystem.
+revoke all on public.profiles, public.sponsors, public.properties,
+  public.property_sponsors, public.inquiries from public, anon, authenticated;
+grant usage on schema public to anon, authenticated, service_role;
+grant select on public.properties, public.sponsors, public.property_sponsors to anon;
+grant insert on public.inquiries to anon;
+grant select, insert, update, delete on public.profiles, public.sponsors,
+  public.properties, public.property_sponsors, public.inquiries to authenticated, service_role;
+
+-- Ownership alone is insufficient if an account's owner role has been revoked.
+-- Administrator access remains covered by the original admin policies.
+drop policy "properties_owner_select_own" on public.properties;
+create policy "properties_owner_select_own" on public.properties for select to authenticated
+using (
+  owner_id = (select auth.uid())
+  and exists (select 1 from public.profiles where id = (select auth.uid()) and role = 'property_owner')
+);
+
+drop policy "properties_owner_insert_draft" on public.properties;
+create policy "properties_owner_insert_draft" on public.properties for insert to authenticated
+with check (
+  owner_id = (select auth.uid()) and status = 'draft'
+  and exists (select 1 from public.profiles where id = (select auth.uid()) and role = 'property_owner')
+);
+
+drop policy "properties_owner_update_unapproved" on public.properties;
+create policy "properties_owner_update_unapproved" on public.properties for update to authenticated
+using (
+  owner_id = (select auth.uid()) and status in ('draft', 'rejected')
+  and exists (select 1 from public.profiles where id = (select auth.uid()) and role = 'property_owner')
+)
+with check (
+  owner_id = (select auth.uid()) and status in ('draft', 'rejected')
+  and exists (select 1 from public.profiles where id = (select auth.uid()) and role = 'property_owner')
+);
+
+drop policy "properties_owner_delete_own" on public.properties;
+create policy "properties_owner_delete_own" on public.properties for delete to authenticated
+using (
+  owner_id = (select auth.uid())
+  and exists (select 1 from public.profiles where id = (select auth.uid()) and role = 'property_owner')
+);
+
+commit;
+```
+
+CURRENT PROPERTY API INPUT SCHEMA
+This is application validation, not a substitute for database constraints.
+```typescript
+import type { JSONSchemaType } from "ajv";
+
+import { createExamValidator } from "../validator/createExamValidator";
+
+export interface PropertyInput {
+  address: string;
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  square_feet: number;
+}
+
+export const propertySchema: JSONSchemaType<PropertyInput> = {
+  $id: "https://example.com/schemas/exam-property-input.schema.json",
+  type: "object",
+  additionalProperties: false,
+  required: ["address", "price", "bedrooms", "bathrooms", "square_feet"],
+  properties: {
+    address: { type: "string", minLength: 5, maxLength: 500, pattern: "\\S" },
+    price: { type: "number", minimum: 0, maximum: 9999999999.99 },
+    bedrooms: { type: "integer", minimum: 0, maximum: 2147483647 },
+    bathrooms: { type: "number", minimum: 0, maximum: 99.9 },
+    square_feet: { type: "integer", minimum: 1, maximum: 2147483647 },
+  },
+};
+
+export const validatePropertyInput = createExamValidator(propertySchema);
+```
+
+CURRENT LIVE TEST HELPER (to be reviewed, not treated as sufficient evidence)
+```javascript
+function deniedOrEmpty(result, label) {
+  if (!result.error) assert.equal(result.data?.length ?? 0, 0, label);
+}
+```

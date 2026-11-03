@@ -74,6 +74,7 @@ export default function SearchFilters({ onSearch }: SearchFiltersProps) {
             className={selectClasses}
           >
             <option value="">Choose a neighborhood</option>
+            <option value="all">All neighborhoods</option>
             <option value="pacific-palisades">Pacific Palisades</option>
             <option value="santa-monica">Santa Monica</option>
             <option value="malibu">Malibu</option>

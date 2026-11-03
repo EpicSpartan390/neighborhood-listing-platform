@@ -1,0 +1,3104 @@
+{
+  "startedAt": "2026-11-03T07:52:40.251Z",
+  "completed": true,
+  "checks": [
+    {
+      "label": "Anonymous reads only the approved fixture",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "anon",
+          "request": {
+            "method": "GET",
+            "url": "<SUPABASE_URL>/rest/v1/properties?select=id%2Cowner_id%2Caddress%2Cprice%2Cbedrooms%2Cbathrooms%2Csquare_feet%2Cstatus%2Ccreated_at&id=in.%2850000000-0000-4000-8000-000000000001%2C50000000-0000-4000-8000-000000000002%2C50000000-0000-4000-8000-000000000003%2C50000000-0000-4000-8000-000000000004%2C50000000-0000-4000-8000-000000000005%2C50000000-0000-4000-8000-000000000099%29&order=id",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "ABSENT",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[{\"id\":\"50000000-0000-4000-8000-000000000003\",\"owner_id\":\"6bb46830-76e8-4b60-acb9-e05a36328ec6\",\"address\":\"Lab 5 Fictional approvedA Street\",\"price\":350000.00,\"bedrooms\":3,\"bathrooms\":2.0,\"square_feet\":1400,\"status\":\"approved\",\"created_at\":\"2026-11-03T07:45:27.146244+00:00\"}]"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Anonymous cannot read a known draft",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "anon",
+          "request": {
+            "method": "GET",
+            "url": "<SUPABASE_URL>/rest/v1/properties?select=id%2Cstatus&id=eq.50000000-0000-4000-8000-000000000001",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "ABSENT",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[]"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Other authenticated user cannot read Owner A draft",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "ownerB",
+          "request": {
+            "method": "GET",
+            "url": "<SUPABASE_URL>/rest/v1/properties?select=id%2Cstatus&id=eq.50000000-0000-4000-8000-000000000001",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <OWNERB_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[]"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Other user can read the approved listing and their own draft",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "ownerB",
+          "request": {
+            "method": "GET",
+            "url": "<SUPABASE_URL>/rest/v1/properties?select=id%2Cowner_id%2Caddress%2Cprice%2Cbedrooms%2Cbathrooms%2Csquare_feet%2Cstatus%2Ccreated_at&id=in.%2850000000-0000-4000-8000-000000000001%2C50000000-0000-4000-8000-000000000002%2C50000000-0000-4000-8000-000000000003%2C50000000-0000-4000-8000-000000000004%2C50000000-0000-4000-8000-000000000005%2C50000000-0000-4000-8000-000000000099%29&order=id",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <OWNERB_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[{\"id\":\"50000000-0000-4000-8000-000000000002\",\"owner_id\":\"ad282867-eaa5-4aa4-a617-907f652fa4bb\",\"address\":\"Lab 5 Fictional draftB Street\",\"price\":350000.00,\"bedrooms\":3,\"bathrooms\":2.0,\"square_feet\":1400,\"status\":\"draft\",\"created_at\":\"2026-11-03T07:45:27.146244+00:00\"}, \n {\"id\":\"50000000-0000-4000-8000-000000000003\",\"owner_id\":\"6bb46830-76e8-4b60-acb9-e05a36328ec6\",\"address\":\"Lab 5 Fictional approvedA Street\",\"price\":350000.00,\"bedrooms\":3,\"bathrooms\":2.0,\"square_feet\":1400,\"status\":\"approved\",\"created_at\":\"2026-11-03T07:45:27.146244+00:00\"}]"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Anonymous sees only active sponsors and public links",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "anon",
+          "request": {
+            "method": "GET",
+            "url": "<SUPABASE_URL>/rest/v1/sponsors?select=id%2Cname%2Ctier%2Cactive_status%2Ccreated_at&id=in.%2850000000-0000-4000-8000-000000000011%2C50000000-0000-4000-8000-000000000012%29&order=id",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "ABSENT",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[{\"id\":\"50000000-0000-4000-8000-000000000011\",\"name\":\"Lab 5 Fictional Active Sponsor\",\"tier\":\"gold\",\"active_status\":true,\"created_at\":\"2026-11-03T07:45:26.905975+00:00\"}]"
+          }
+        },
+        {
+          "actor": "anon",
+          "request": {
+            "method": "GET",
+            "url": "<SUPABASE_URL>/rest/v1/property_sponsors?select=property_id%2Csponsor_id&property_id=in.%2850000000-0000-4000-8000-000000000001%2C50000000-0000-4000-8000-000000000002%2C50000000-0000-4000-8000-000000000003%2C50000000-0000-4000-8000-000000000004%2C50000000-0000-4000-8000-000000000005%2C50000000-0000-4000-8000-000000000099%29&order=property_id%2Csponsor_id",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "ABSENT",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[{\"property_id\":\"50000000-0000-4000-8000-000000000003\",\"sponsor_id\":\"50000000-0000-4000-8000-000000000011\"}]"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Owner can read and update their draft",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "ownerA",
+          "request": {
+            "method": "PATCH",
+            "url": "<SUPABASE_URL>/rest/v1/properties?id=eq.50000000-0000-4000-8000-000000000001&select=id%2Cprice",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <OWNERA_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            },
+            "body": {
+              "price": 350001
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[{\"id\":\"50000000-0000-4000-8000-000000000001\",\"price\":350001.00}]"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Other user cannot update Owner A draft",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "ownerB",
+          "request": {
+            "method": "PATCH",
+            "url": "<SUPABASE_URL>/rest/v1/properties?id=eq.50000000-0000-4000-8000-000000000001&select=id%2Cowner_id%2Caddress%2Cprice%2Cbedrooms%2Cbathrooms%2Csquare_feet%2Cstatus%2Ccreated_at",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <OWNERB_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            },
+            "body": {
+              "price": 999
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[]"
+          }
+        }
+      ],
+      "protectedState": {
+        "before": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        },
+        "after": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "Owner cannot reassign their draft",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "ownerA",
+          "request": {
+            "method": "PATCH",
+            "url": "<SUPABASE_URL>/rest/v1/properties?id=eq.50000000-0000-4000-8000-000000000001&select=id%2Cowner_id%2Caddress%2Cprice%2Cbedrooms%2Cbathrooms%2Csquare_feet%2Cstatus%2Ccreated_at",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <OWNERA_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            },
+            "body": {
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb"
+            }
+          },
+          "response": {
+            "status": 403,
+            "body": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"new row violates row-level security policy for table \\\"properties\\\"\"}"
+          }
+        }
+      ],
+      "protectedState": {
+        "before": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        },
+        "after": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "Owner cannot self-approve their draft",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "ownerA",
+          "request": {
+            "method": "PATCH",
+            "url": "<SUPABASE_URL>/rest/v1/properties?id=eq.50000000-0000-4000-8000-000000000001&select=id%2Cowner_id%2Caddress%2Cprice%2Cbedrooms%2Cbathrooms%2Csquare_feet%2Cstatus%2Ccreated_at",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <OWNERA_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            },
+            "body": {
+              "status": "approved"
+            }
+          },
+          "response": {
+            "status": 403,
+            "body": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"new row violates row-level security policy for table \\\"properties\\\"\"}"
+          }
+        }
+      ],
+      "protectedState": {
+        "before": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        },
+        "after": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "Owner cannot update approved listing",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "ownerA",
+          "request": {
+            "method": "PATCH",
+            "url": "<SUPABASE_URL>/rest/v1/properties?id=eq.50000000-0000-4000-8000-000000000003&select=id%2Cowner_id%2Caddress%2Cprice%2Cbedrooms%2Cbathrooms%2Csquare_feet%2Cstatus%2Ccreated_at",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <OWNERA_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            },
+            "body": {
+              "price": 999
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[]"
+          }
+        }
+      ],
+      "protectedState": {
+        "before": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        },
+        "after": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "Owner cannot delete approved listing",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "ownerA",
+          "request": {
+            "method": "DELETE",
+            "url": "<SUPABASE_URL>/rest/v1/properties?id=eq.50000000-0000-4000-8000-000000000003&select=id%2Cowner_id%2Caddress%2Cprice%2Cbedrooms%2Cbathrooms%2Csquare_feet%2Cstatus%2Ccreated_at",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <OWNERA_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[]"
+          }
+        }
+      ],
+      "protectedState": {
+        "before": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        },
+        "after": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "Owner cannot update pending listing",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "ownerA",
+          "request": {
+            "method": "PATCH",
+            "url": "<SUPABASE_URL>/rest/v1/properties?id=eq.50000000-0000-4000-8000-000000000004&select=id%2Cowner_id%2Caddress%2Cprice%2Cbedrooms%2Cbathrooms%2Csquare_feet%2Cstatus%2Ccreated_at",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <OWNERA_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            },
+            "body": {
+              "price": 999
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[]"
+          }
+        }
+      ],
+      "protectedState": {
+        "before": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        },
+        "after": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "Owner cannot delete pending listing",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "ownerA",
+          "request": {
+            "method": "DELETE",
+            "url": "<SUPABASE_URL>/rest/v1/properties?id=eq.50000000-0000-4000-8000-000000000004&select=id%2Cowner_id%2Caddress%2Cprice%2Cbedrooms%2Cbathrooms%2Csquare_feet%2Cstatus%2Ccreated_at",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <OWNERA_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[]"
+          }
+        }
+      ],
+      "protectedState": {
+        "before": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        },
+        "after": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "Other user cannot delete Owner A draft",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "ownerB",
+          "request": {
+            "method": "DELETE",
+            "url": "<SUPABASE_URL>/rest/v1/properties?id=eq.50000000-0000-4000-8000-000000000001&select=id%2Cowner_id%2Caddress%2Cprice%2Cbedrooms%2Cbathrooms%2Csquare_feet%2Cstatus%2Ccreated_at",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <OWNERB_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[]"
+          }
+        }
+      ],
+      "protectedState": {
+        "before": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        },
+        "after": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "Ordinary user cannot promote their profile",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "ownerB",
+          "request": {
+            "method": "PATCH",
+            "url": "<SUPABASE_URL>/rest/v1/profiles?id=eq.ad282867-eaa5-4aa4-a617-907f652fa4bb&select=id%2Crole",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <OWNERB_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            },
+            "body": {
+              "role": "admin"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[]"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Anonymous property insertion is denied",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "anon",
+          "request": {
+            "method": "POST",
+            "url": "<SUPABASE_URL>/rest/v1/properties?",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "ABSENT",
+              "Content-Type": "application/json",
+              "Prefer": "return=minimal"
+            },
+            "body": {
+              "id": "50000000-0000-4000-8000-000000000099",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft"
+            }
+          },
+          "response": {
+            "status": 401,
+            "body": "{\"code\":\"42501\",\"details\":null,\"hint\":\"Grant the required privileges to the current role with: GRANT INSERT ON public.properties TO anon;\",\"message\":\"permission denied for table properties\"}"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Anonymous cannot read inquiries; owners remain isolated",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "anon",
+          "request": {
+            "method": "GET",
+            "url": "<SUPABASE_URL>/rest/v1/inquiries?select=id%2Cproperty_id%2Cinquirer_email%2Cmessage%2Ccreated_at&property_id=in.%2850000000-0000-4000-8000-000000000001%2C50000000-0000-4000-8000-000000000002%2C50000000-0000-4000-8000-000000000003%2C50000000-0000-4000-8000-000000000004%2C50000000-0000-4000-8000-000000000005%2C50000000-0000-4000-8000-000000000099%29&order=id",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "ABSENT",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            }
+          },
+          "response": {
+            "status": 401,
+            "body": "{\"code\":\"42501\",\"details\":null,\"hint\":\"Grant the required privileges to the current role with: GRANT SELECT ON public.inquiries TO anon;\",\"message\":\"permission denied for table inquiries\"}"
+          }
+        },
+        {
+          "actor": "ownerA",
+          "request": {
+            "method": "GET",
+            "url": "<SUPABASE_URL>/rest/v1/inquiries?select=id%2Cproperty_id%2Cinquirer_email%2Cmessage%2Ccreated_at&property_id=in.%2850000000-0000-4000-8000-000000000001%2C50000000-0000-4000-8000-000000000002%2C50000000-0000-4000-8000-000000000003%2C50000000-0000-4000-8000-000000000004%2C50000000-0000-4000-8000-000000000005%2C50000000-0000-4000-8000-000000000099%29&order=id",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <OWNERA_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[{\"id\":\"50000000-0000-4000-8000-000000000021\",\"property_id\":\"50000000-0000-4000-8000-000000000003\",\"inquirer_email\":\"lab5-a@example.com\",\"message\":\"Lab 5 fictional inquiry for Owner A.\",\"created_at\":\"2026-11-03T07:45:27.656854+00:00\"}]"
+          }
+        },
+        {
+          "actor": "ownerB",
+          "request": {
+            "method": "GET",
+            "url": "<SUPABASE_URL>/rest/v1/inquiries?select=id%2Cproperty_id%2Cinquirer_email%2Cmessage%2Ccreated_at&property_id=in.%2850000000-0000-4000-8000-000000000001%2C50000000-0000-4000-8000-000000000002%2C50000000-0000-4000-8000-000000000003%2C50000000-0000-4000-8000-000000000004%2C50000000-0000-4000-8000-000000000005%2C50000000-0000-4000-8000-000000000099%29&order=id",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <OWNERB_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[{\"id\":\"50000000-0000-4000-8000-000000000022\",\"property_id\":\"50000000-0000-4000-8000-000000000002\",\"inquirer_email\":\"lab5-b@example.com\",\"message\":\"Lab 5 fictional inquiry for Owner B.\",\"created_at\":\"2026-11-03T07:45:27.656854+00:00\"}]"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Anonymous may submit a fictional inquiry without reading it",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "anon",
+          "request": {
+            "method": "POST",
+            "url": "<SUPABASE_URL>/rest/v1/inquiries?",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "ABSENT",
+              "Content-Type": "application/json",
+              "Prefer": "return=minimal"
+            },
+            "body": {
+              "id": "50000000-0000-4000-8000-000000000029",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-probe@example.com",
+              "message": "Lab 5 fictional anonymous submission test."
+            }
+          },
+          "response": {
+            "status": 201,
+            "body": ""
+          }
+        }
+      ]
+    },
+    {
+      "label": "Authenticated admin reads all five fixture tables",
+      "passed": true,
+      "exchanges": []
+    },
+    {
+      "label": "Authenticated admin can edit approved property",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "admin",
+          "request": {
+            "method": "PATCH",
+            "url": "<SUPABASE_URL>/rest/v1/properties?id=eq.50000000-0000-4000-8000-000000000003&select=id%2Cprice",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <ADMIN_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            },
+            "body": {
+              "price": 350002
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[{\"id\":\"50000000-0000-4000-8000-000000000003\",\"price\":350002.00}]"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Administrator still obeys price CHECK constraint",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "admin",
+          "request": {
+            "method": "PATCH",
+            "url": "<SUPABASE_URL>/rest/v1/properties?id=eq.50000000-0000-4000-8000-000000000003&select=id%2Cowner_id%2Caddress%2Cprice%2Cbedrooms%2Cbathrooms%2Csquare_feet%2Cstatus%2Ccreated_at",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <ADMIN_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            },
+            "body": {
+              "price": -1
+            }
+          },
+          "response": {
+            "status": 400,
+            "body": "{\"code\":\"23514\",\"details\":null,\"hint\":null,\"message\":\"new row for relation \\\"properties\\\" violates check constraint \\\"properties_price_check\\\"\"}"
+          }
+        }
+      ],
+      "protectedState": {
+        "before": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350002,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000029",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-probe@example.com",
+              "message": "Lab 5 fictional anonymous submission test.",
+              "created_at": "2026-11-03T07:52:59.952098+00:00"
+            }
+          ]
+        },
+        "after": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350002,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000029",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-probe@example.com",
+              "message": "Lab 5 fictional anonymous submission test.",
+              "created_at": "2026-11-03T07:52:59.952098+00:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "Service bypasses RLS but still obeys price CHECK constraint",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "service",
+          "request": {
+            "method": "PATCH",
+            "url": "<SUPABASE_URL>/rest/v1/properties?id=eq.50000000-0000-4000-8000-000000000003&select=id%2Cowner_id%2Caddress%2Cprice%2Cbedrooms%2Cbathrooms%2Csquare_feet%2Cstatus%2Ccreated_at",
+            "headers": {
+              "apikey": "<SERVICE_ROLE_KEY>",
+              "Authorization": "Bearer <SERVICE_ROLE_KEY>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            },
+            "body": {
+              "price": -1
+            }
+          },
+          "response": {
+            "status": 400,
+            "body": "{\"code\":\"23514\",\"details\":\"Failing row contains (50000000-0000-4000-8000-000000000003, 6bb46830-76e8-4b60-acb9-e05a36328ec6, Lab 5 Fictional approvedA Street, -1.00, 3, 2.0, 1400, approved, 2026-11-03 07:45:27.146244+00).\",\"hint\":null,\"message\":\"new row for relation \\\"properties\\\" violates check constraint \\\"properties_price_check\\\"\"}"
+          }
+        }
+      ],
+      "protectedState": {
+        "before": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350002,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000029",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-probe@example.com",
+              "message": "Lab 5 fictional anonymous submission test.",
+              "created_at": "2026-11-03T07:52:59.952098+00:00"
+            }
+          ]
+        },
+        "after": {
+          "profiles": [
+            {
+              "id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "role": "property_owner",
+              "created_at": "2026-11-02T05:44:57.371045+00:00"
+            },
+            {
+              "id": "95dca1e9-254e-4ba4-9de1-c00e9d9d5566",
+              "role": "admin",
+              "created_at": "2026-11-02T18:28:23.884094+00:00"
+            },
+            {
+              "id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "role": "property_owner",
+              "created_at": "2026-11-02T18:26:25.363031+00:00"
+            }
+          ],
+          "sponsors": [
+            {
+              "id": "50000000-0000-4000-8000-000000000011",
+              "name": "Lab 5 Fictional Active Sponsor",
+              "tier": "gold",
+              "active_status": true,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000012",
+              "name": "Lab 5 Fictional Inactive Sponsor",
+              "tier": "bronze",
+              "active_status": false,
+              "created_at": "2026-11-03T07:45:26.905975+00:00"
+            }
+          ],
+          "properties": [
+            {
+              "id": "50000000-0000-4000-8000-000000000001",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional draftA Street",
+              "price": 350001,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000002",
+              "owner_id": "ad282867-eaa5-4aa4-a617-907f652fa4bb",
+              "address": "Lab 5 Fictional draftB Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "draft",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000003",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional approvedA Street",
+              "price": 350002,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "approved",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000004",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional pendingA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "pending",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000005",
+              "owner_id": "6bb46830-76e8-4b60-acb9-e05a36328ec6",
+              "address": "Lab 5 Fictional rejectedA Street",
+              "price": 350000,
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "square_feet": 1400,
+              "status": "rejected",
+              "created_at": "2026-11-03T07:45:27.146244+00:00"
+            }
+          ],
+          "property_sponsors": [
+            {
+              "property_id": "50000000-0000-4000-8000-000000000001",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000011"
+            },
+            {
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "sponsor_id": "50000000-0000-4000-8000-000000000012"
+            }
+          ],
+          "inquiries": [
+            {
+              "id": "50000000-0000-4000-8000-000000000021",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-a@example.com",
+              "message": "Lab 5 fictional inquiry for Owner A.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000022",
+              "property_id": "50000000-0000-4000-8000-000000000002",
+              "inquirer_email": "lab5-b@example.com",
+              "message": "Lab 5 fictional inquiry for Owner B.",
+              "created_at": "2026-11-03T07:45:27.656854+00:00"
+            },
+            {
+              "id": "50000000-0000-4000-8000-000000000029",
+              "property_id": "50000000-0000-4000-8000-000000000003",
+              "inquirer_email": "lab5-probe@example.com",
+              "message": "Lab 5 fictional anonymous submission test.",
+              "created_at": "2026-11-03T07:52:59.952098+00:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "Owner can delete their rejected fixture",
+      "passed": true,
+      "exchanges": [
+        {
+          "actor": "ownerA",
+          "request": {
+            "method": "DELETE",
+            "url": "<SUPABASE_URL>/rest/v1/properties?id=eq.50000000-0000-4000-8000-000000000005&select=id",
+            "headers": {
+              "apikey": "<PUBLIC_API_KEY>",
+              "Authorization": "Bearer <OWNERA_ACCESS_TOKEN>",
+              "Content-Type": "application/json",
+              "Prefer": "return=representation"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "[{\"id\":\"50000000-0000-4000-8000-000000000005\"}]"
+          }
+        }
+      ]
+    }
+  ],
+  "cleanup": "original fictional records restored and verified",
+  "finishedAt": "2026-11-03T07:53:04.493Z"
+}

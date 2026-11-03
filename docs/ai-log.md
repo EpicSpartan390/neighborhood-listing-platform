@@ -436,3 +436,203 @@ The midterm is being completed incrementally inside the existing Neighborhood Li
 | Live multi-role RLS audit / ChatGPT and Codex | Verify public visibility, owner isolation, inquiry privacy, administrator authority, and trusted server access using genuine Supabase identities. | Used a credential-safe live audit script with fictional fixtures for Owner A, Owner B, an administrator, anonymous access, and the service role. | Rejected SQL-editor-only role simulation because database-owner execution bypasses RLS, and rejected printing passwords, JWTs, or API keys as evidence. | The live audit passed: approved-only public properties, active-only sponsors, owner-scoped edits, approved/cross-owner update denial, anonymous inquiry submission without inquiry reads, owner inquiry isolation, and admin/service read-write access across all five tables. | `512962c` |
 | Accessible property interface / ChatGPT and Codex | Review the existing PropertyCard and complete the examination semantic, responsive, focus, and keyboard requirements without replacing earlier lab behavior. | Preserved the existing property interface, image, favorite control, listing link, and dark styling; added a distinct header, functional View Details disclosure button, accessible state attributes, and explicit 1/2/3-column grid classes. | Rejected replacing the existing page or removing prior Lab 2 behavior solely to satisfy the exam slice. | Twenty-eight tests passed; TypeScript, ESLint, npm audit, and the production build passed; manual Tab, Shift+Tab, Enter, and Space testing passed with visible focus rings; mobile/tablet/desktop layouts displayed 1/2/3 columns. | `416e6d2` |
 | Hosted exam preview / ChatGPT and Codex | Configure and verify a public Vercel Preview deployment for the examination branch without merging the pull request. | Used Preview-scoped Config values for the public Supabase URL/key, a Preview-scoped Secret for the service-role key, and the stable exam-branch preview domain. | Rejected promoting the unreviewed branch to production, exposing secret values, and leaving Vercel Authentication enabled because it blocked instructor access. | Vercel built commit `5bac75b`; the hosted page and approved-property GET returned HTTP 200, invalid POST returned HTTP 400, unsigned valid POST returned HTTP 401, and public access was confirmed without Vercel login. | `5bac75b` |
+
+
+## Lab 5 — Existing-project review and setup checkpoint
+
+**Tool:** ChatGPT / Codex  
+**Review date:** 2026-11-02 (America/Los_Angeles)  
+**Source snapshot:** `e0cb2e3e2270e07dc8644cdc85bf86e9a638681b`, uploaded from the student's clean, synced `exam/practical-persistence-eval` branch.  
+**Associated commit:** Pending; no commit or push was made.
+
+### Exact kickoff prompt
+
+<details>
+<summary>Expand the complete user prompt</summary>
+
+```text
+Help me complete CIS 3610 Lab 5: PostgreSQL, Supabase, CRUD, and Row-Level Security in my existing neighborhood-listing-platform project.
+
+My goal is a complete, understandable submission that meets the professor’s requirements while using my available ChatGPT usage efficiently. I am a beginner and need to explain what I built and why.
+
+Working method:
+
+1. Inspect the current repository and Git status before changing anything. Identify completed work, missing requirements, and reusable code. Preserve unfinished Lab 4 work and unrelated changes.
+2. Use the assignment and rubric as the scope. Prioritize schema/migrations, RLS design and tests, CRUD integration, and secret hygiene. Avoid optional features, unnecessary dependencies, broad refactoring, and duplicate documentation.
+3. Follow the professor’s lab sequence. Maintain one overall checklist, but show me only the current step, its purpose, the action needed, and how we will verify it. Batch related implementation work when it is safe to do so.
+4. Reuse existing components, TypeScript types, Zod validation, tests, and documentation where appropriate. Create or change code only when needed. Explain significant changes in plain English.
+5. Build around properties, sponsors, property_sponsors, profiles, and inquiries. Review ownership, keys, required fields, checks, timestamps, and deletion behavior. Store database changes in versioned migrations and use fictional seed data.
+6. Treat authorization as a core requirement. Enable RLS on exposed tables, allow public access only to intended records, and enforce ownership and approval restrictions. Preserve the requesting user’s identity for ordinary database operations. Keep privileged credentials server-only.
+7. Test anonymous, owner, other authenticated user, and administrator access. Include attempts to change ownership or approval status. Distinguish RLS restrictions from server authorization and database constraints; do not invent an RLS denial for a service role that bypasses RLS.
+8. Implement the required GET and POST or PATCH routes with validation, authorization, explicit response fields, and safe errors. Connect the existing UI and provide loading, empty, and error states.
+9. Run meaningful checks appropriate to each change. Record actual requests, authentication state, responses, and before/after data where needed. Clearly label anything drafted, untested, blocked, or awaiting my action. Never invent results.
+10. Record material AI assistance in docs/ai-log.md, including exact prompts, useful and rejected output, verification, and commit references once available. At required Gemini or AI Studio checkpoints, provide the prompt and wait for the real output I supply.
+11. Never request or display real credentials. Use placeholders in shared evidence. Verify ignored configuration and scan tracked files and Git history before release.
+12. Maintain concise handoff notes in the repository: current branch, changed files, completed requirements, checks run, remaining tasks, decisions, and the exact next step. Keep these useful for continuing with a lighter model.
+
+Make authorized local draft changes when repository access is available. Stop before committing, pushing, merging, deploying, or modifying a remote database until I explicitly authorize that action. If you cannot access something, say so and request only the specific information needed.
+
+Begin with a read-only repository check and the first Lab 5 step. i know you said not to paste it back, you can put the work into the same local folder or you can use the workspace in chatgpt and put the code there while you work on the assignment i will run the code
+```
+
+</details>
+
+### Useful output retained
+
+- Reuse the existing five-table migrations, public/user/service clients, AJV input validation, GET/POST route, components, and exam tests instead of rebuilding them.
+- Add a focused handoff/checklist in [lab5-handoff.md](lab5-handoff.md) to preserve the audit, remaining requirements, and next action for continuation with a lighter model.
+- Identify that the homepage still imports the local property array, so the database route is not yet connected to its listing UI.
+- Review the approved-record owner DELETE policy, denial-test assertions, reproducible seeding/rebuild, exact diagnostic evidence, and missing ownership/self-approval negative tests before implementation.
+
+### Rejected assumptions and deferred work
+
+- Do not substitute Zod for the AJV implementation actually present in this branch. The prompt's mention of Zod does not establish it as the current validator.
+- Do not treat exam live-test notes as newly executed Lab 5 results, or any service-role access as proof of ordinary-user RLS.
+- Do not replace existing migrations or overwrite working `.env.local` configuration. Do not assume Lab 3/4 work absent from this archive is absent from other branches.
+- Do not add PATCH, an admin dashboard, a new dependency, or optional audit-events functionality solely to expand the project; GET plus POST already covers the route methods explicitly requested by the lab.
+- Gemini/AI Studio reviews, runtime checks, live database operations, history scanning, commits, and deployment remain pending.
+
+### Verification performed
+
+The ZIP's embedded commit matches the student's reported HEAD. Only `.env.example` is included among environment files, and its three values are placeholders. The supplied ignore rules were tested in an isolated temporary repository: `.env.local` and `.env.production` are ignored, while `.env.example` is allowed. A preliminary pattern scan of 47 text files found no private-key/JWT/Supabase-secret/GitHub-token matches; this is a limited snapshot check, not a full secret or Git-history audit. Source and test definitions were read, but dependencies were not installed and tests, lint, typecheck, build, and live database checks were not run here. No application or SQL code changed.
+
+
+## Lab 5 — Setup confirmation and relationship design
+
+**Tool:** ChatGPT / Codex  
+**Instruction basis:** Continue under the exact Lab 5 kickoff prompt above, after the student provided real setup results.  
+**Associated commit:** Pending; these are uncommitted documentation drafts.
+
+### Student verification received
+
+The student ran `git switch -c feature/database`, which reported the new branch. `Test-Path .env.local` returned `True`, `git check-ignore .env.local` returned `.env.local`, and `git status` reported `feature/database` with a clean working tree. No configuration values were requested or shared.
+
+### Output retained and review decisions
+
+- Added [database-design.md](database-design.md), describing the five existing tables, primary/foreign keys, required fields, checks, timestamps, cardinalities, and actual cascade behavior.
+- Flagged owner deletion of approved listings, inquiry target visibility, validation differences, and weak denial assertions for review. These are source findings, not newly executed exploit tests.
+- Rejected rebuilding the schema, duplicating the GET/POST routes, inventing sponsor ownership columns, or treating the service role as subject to ordinary-user RLS.
+- Updated [lab5-handoff.md](lab5-handoff.md) to mark setup and the drafted relationship review complete and record the exact next checkpoint.
+
+### Prepared external AI checkpoint
+
+The exact self-contained prompt and supplied code are saved in [lab5-ai-review-prompt.txt](lab5-ai-review-prompt.txt). It contains both existing migrations in order, the actual AJV property schema, and the denial helper needing review. The student is to submit it to a Gemini model in Google AI Studio. **Submission, model identity, real output, accepted/rejected suggestions, and resulting verification are pending.** No Gemini result has been fabricated or recorded as received.
+
+### Verification scope
+
+The design and included SQL were compared with the uploaded source; application, migration, and test code are unchanged. No runtime suite, database migration, live role test, commit, push, or deployment was performed in this step.
+
+
+## Lab 5 — External review evaluated and owner DELETE migration drafted
+
+**Tools:** Student-supplied external AI response; ChatGPT/Codex source review.  
+**Model:** Gemini Flash-Lite, as reported by the student. Exact version was not supplied.  
+**Exact prompt:** [lab5-ai-review-prompt.txt](lab5-ai-review-prompt.txt).  
+**Response evidence:** Student's pasted response in this Lab 5 conversation, beginning “1. Analysis: Strengths, Defects, Decisions, and Improvements.” Evaluation and specific accepted/rejected claims are preserved in [database-design.md](database-design.md).  
+**Associated commit:** Pending; no commit/push.
+
+**Useful output:** Confirmed the status-unrestricted owner DELETE policy and weak denial helper. Accepted restricting owner deletions to owned draft/rejected listings while retaining ownership/role checks. Used the proposed policy predicate, adapted to ALTER POLICY in a new numbered migration instead of changing previously applied SQL.
+
+**Rejected/adapted output:** The new helper rejects legitimate expected permission errors, so it is not copied verbatim. WITH CHECK (true) is not necessary for anonymous inquiry access. The four-role matrix omits the other authenticated user and admin denial. Placeholder profile IDs cannot seed records unless those Auth users exist. The seed misses multiple required fixtures. Stopping the local stack before db reset omits the running-stack requirement, and no local configuration was supplied. Do not run those reset commands on the hosted project.
+
+**Verification:** Compared the policy predicate with the existing hardening migration and PostgreSQL ALTER POLICY documentation; checked expected denial semantics and CLI prerequisites in official Supabase documentation. Confirmed prior migrations are unchanged. The follow-up is a local, unapplied draft; no parser/database execution, role test, seed, reset, commit, or deployment has been performed. Actual live verification remains pending. The student subsequently identified the review model as Gemini Flash-Lite; no exact version was supplied.
+
+
+### Filename discussion resolved
+
+The student initially requested no numeric prefix. An unnumbered workspace draft was prepared, then the functional dependency and lab requirement were clarified. The student resumed from the original numbered laptop filename; the workspace was restored to match. SQL content did not change. The unnumbered download is superseded.
+
+
+## Lab 5 — Reusable fictional seed draft and offline safety checks
+
+**Tool:** ChatGPT/Codex; continuing under the exact kickoff prompt above.  
+**Input:** Student confirmed resumption from `feature/database` with the expected five draft paths, including the numbered SQL migration.  
+**Associated commit:** Pending; no commit/push.
+
+**Output retained:** Added a shared fixture builder and development seed entry point, reusing the existing Supabase SDK and exam account environment-variable names. The real seed obtains UUIDs from authenticated accounts, preflights collisions/roles, preserves existing roles, and writes fictional rows in dependency order. Added an offline preview and separate Node safety tests; documented rebuild prerequisites and future exact role/evidence checks in `docs/lab5-database-verification.md`.
+
+**Output rejected/adapted:** Rejected the external review's arbitrary profile UUID inserts and incomplete seed. Did not run reset, modify remote data, introduce new packages, or claim an administrative seed proves RLS. No actual credentials were added. Existing exam scripts were left intact; the shared fixture module can be imported by upcoming Lab 5 authorization checks.
+
+**Actual workspace verification:** `node --check scripts/lab5-seed.mjs` passed. `node --test tests/lab5-seed.node-test.mjs` passed all 6 tests: account identity/role separation, role protection, unrelated-row collision rejection, known-fixture restore allowance, credential-free offline preview, and apply-mode refusal with missing configuration. The dry-run printed 3 profiles, 2 sponsors, 5 properties, 3 connections, and 2 inquiries. No dependency install or network/database request was needed. Full project lint/typecheck/Vitest/build and live seed/RLS/rebuild checks remain pending.
+
+
+## Lab 5 — Student seed verification and strict authorization audit draft
+
+**Tool:** ChatGPT/Codex, continuing under the recorded kickoff prompt and reviewed Gemini Flash-Lite output.  
+**Actual student evidence:** Seed dry-run returned 3 profiles, 2 sponsors, 5 properties, 3 links, 2 inquiries; all 6 offline seed safety tests passed on the laptop.  
+**Associated commit:** Pending.
+
+**Used:** Added strict zero-row versus SQL-error assertions, snapshot comparisons, credential redaction, a guarded live database REST audit, and future request/response capture. Reused the seed fixtures and extracted account setup into one shared module. Added the correct four-role properties matrix and actual repository policy statements to the existing security audit document.
+
+**Rejected/adapted:** No any-error-as-denial helper; no invented HTTP responses; no service-role substitution for the other authenticated user; no marking local assertion tests as live RLS evidence. Existing exam evidence and scripts remain intact. The live runner refuses to overwrite evidence and treats failed fixture restoration as failure.
+
+**Workspace verification actually run:** Combined Node suite passed all 13 tests; audit/client syntax checks passed; offline seed preview still produced the expected counts. The original six tests were rerun because shared seed setup changed. No remote sign-in, fixture write, SQL execution, live RLS check, credential output, commit, or deployment occurred. Full project checks and application/browser integration remain pending.
+
+
+### Student verification: combined offline suite
+
+The student supplied laptop output for `node --test tests/lab5-seed.node-test.mjs tests/lab5-audit.node-test.mjs`: 13 tests passed, 0 failed (192.3512 ms reported). This confirms the offline helper/safety checks in the student's environment. It is not evidence of live RLS or migration execution. No database changes are reported. Next: verify presence of required local configuration without exposing values and obtain explicit authorization for the identified development project's migration, fictional seed, and fixture-mutating/restoring live audit.
+
+
+### Development configuration and authorization received
+
+The student reported SET for all nine required environment-variable names without sharing values. In response to the explicit request to confirm the development Supabase target and authorize the prepared migration, fictional seed, and live role tests, the student answered: “this is my project yes”. This authorizes those scoped development actions; no reset, commit, push, or deployment is included. Next assigned action is applying only `20261103000000_lab5_owner_delete_unapproved.sql` in the existing development project and returning a read-only policy verification. Application, seed execution, and live test results remain pending until the student supplies actual output.
+
+
+### Student verification: owner DELETE migration applied
+
+The student ran the saved numbered Lab 5 migration in the authorized development project's SQL Editor and reported `Success. No rows returned`. A subsequent `pg_policies` query returned `properties_owner_delete_own`, command `DELETE`, roles `{authenticated}`, and a USING expression requiring matching `auth.uid()`, status in `draft/rejected`, and an existing matching profile with role `property_owner`. This confirms the saved definition, not live denial behavior. No claim is made that SQL Editor application created a Supabase CLI migration-history entry.
+
+Next assigned action: run the prepared fictional seed from the laptop with its existing private configuration and explicit development-host guard, then return actual output. Seed and live RLS results are still pending. Authorization already covers migration, seed, and fixture-mutating/restoring audit; do not ask again for the same scope.
+
+
+### Student verification: fictional development seed applied
+
+The student ran the guarded seed with the existing private `.env.local` and supplied real output: `Fictional Lab 5 seed writes completed using real development Auth UUIDs.` Counts were profiles 3, sponsors 2, properties 5, property_sponsors 3, inquiries 2. This verifies that the seed completed, not ordinary-user RLS. No credentials were supplied in chat. The next authorized action is the separate live role audit with actual redacted request/response evidence and fixture restoration.
+
+
+### Student-reported live role audit result
+
+The student supplied actual terminal output: `Live checks passed: 23. Evidence: docs/lab5-live-evidence.json`. This reports a completed live development database REST audit. The evidence JSON has not yet been uploaded/inspected in this workspace, so per-check payloads, raw responses, and restoration status must still be reviewed before finalizing the authorization assignment. These checks do not establish application-route or browser behavior.
+
+
+### Uploaded live evidence inspected
+
+Inspected the student's `lab5-live-evidence.json`: completed=true, 23 of 23 checks passed, cleanup says original fictional records restored and verified. All saved protected-write snapshots match; captured API-key and Authorization fields contain placeholders/absence markers. Preserved the JSON byte-for-byte in the repository and populated the existing security-audit document with genuine requests, HTTP statuses, and raw response bodies. Anonymous draft SELECT and nonowner UPDATE returned 200/[]; anonymous property INSERT returned 401/42501; self-approval returned 403/42501; invalid admin/service prices returned 400/23514. Rejected interpreting all denials as 403 or treating service constraints as RLS. The admin all-table read result records a passed snapshot check without raw exchanges; this limitation is stated. A second uploaded JSON was identical. No rerun or new database operation occurred.
+
+
+## Lab 5 — Step 12 database listing UI draft
+
+**Tool:** ChatGPT/Codex, continuing the recorded Lab 5 work. **Student input:** Uploaded the requested installed Next.js guide archive and confirmed “sent”; a second uploaded guide archive was identical. **Associated commit:** Pending; no commit/push.
+
+**Guides read before edits:** Installed package guides for server/client components, fetching data, client-side fetching, error handling, route handlers, and use-client. Retained the existing client homepage and implemented a cancellable browser request to the existing public GET route, without a new fetching dependency or a server-to-own-route request.
+
+**Output used:** Replaced the homepage static property import with `/api/properties` loading. Added a public-response loader that checks render-critical values and maps `square_feet` to `squareFeet`. Reused the placeholder artwork; made the shared external listing URL optional and conditionally rendered its link. Added distinct loading, database-empty, filtered-empty, safe error, and retry states, with aborted/stale response guards. Preserved favorites, details, sponsors, existing styling, and existing static data files. Added All neighborhoods and corrected the previous Pacific Palisades bypass so neighborhood choices actually filter addresses. Added focused Vitest coverage and `docs/lab5-ui-verification.md`. Updated the handoff and database-verification current status to reflect already-completed live work.
+
+**Actual verification:** Fifteen focused loader scenarios passed using Node 24 native TypeScript execution and mocked fetch with strict assertions: mapping/options, empty result, HTTP failure, network failure, nine malformed payloads, invalid JSON, and abort propagation. These were not a Vitest suite run or a browser test. `npm ci --ignore-scripts --no-audit --no-fund` failed with HTTP 403 downloading `zod-validation-error@4.0.2`; full lint, Vitest, typecheck, build, and browser checks therefore remain pending on the laptop. No dependency version or lockfile change was intended. No database request, reset, commit, push, or deployment occurred. The existing 23-check database evidence was preserved and not rerun.
+
+
+## Lab 5 — Student production checks and browser verification
+
+**Tool:** ChatGPT/Codex; continuing the recorded Lab 5 workflow. **Associated commit:** Pending.
+
+**Actual laptop checks supplied:** Initial plain npm commands failed because PowerShell blocked npm.ps1 before the checks ran. The student used npm.cmd without changing execution policy. ESLint and TypeScript completed without reported issues; Vitest 4.1.12 passed all 43 tests in 4 files (5 HTTP helper, 15 property loader, 16 schema, 7 route). Next.js 16.4.3 production build completed successfully, including all 5 static pages; /api/properties remains dynamic. npm.cmd start reported Ready on localhost:3000. These results supersede the earlier pending laptop verification, while the workspace dependency-install failure remains accurately recorded.
+
+**Actual application evidence:** Student supplied a public API JSON body containing two database listings and a homepage screenshot showing matching addresses, prices, bedrooms/bathrooms, square footage, placeholder illustrations, and 2 properties shown. After the explicit checks, the student replied “yes alla checks out” for matching values, favorites, details, Malibu no-match, and All neighborhoods restoration. After separate browser request-blocking/unblocking instructions, the student replied “yes” for the generic error state and successful retry. These confirmations are reported manual outcomes, not an independent automated browser run. No HTTP status/headers were provided with that browser JSON body.
+
+**Documentation updated:** Current verification guide, handoff checklist, database-design migration status, and database-verification summary now distinguish completed checks from remaining work. Loading under throttling, database-empty/malformed-response UI, mobile/keyboard-only checks, stale-response browser cases, clean-environment rebuild, and repository/history/contribution/release review remain unverified where applicable. No new application code, database request, reset, commit, push, or deployment was performed for this update.
+
+
+## Lab 5 — Secret/history review and clean schema reconstruction
+
+**Tool:** ChatGPT/Codex; continuing the recorded Lab 5 workflow. **Associated commit:** Pending. **File review/commit/push approvals:** Still pending as separate steps.
+
+**Actual student evidence:** The laptop was on feature/database with the expected source/documentation changes and new scripts/tests. `.env.local` was ignored. Current and available-history private-env filename scans returned no paths other than the separately confirmed ignored local file. The specified common-credential grep and Git-history pickaxe checks returned no matching filenames or commit IDs. This is a limited pattern/history scan, not a guarantee that every secret format is absent. No actual configuration values were requested or supplied.
+
+**Clean-environment decision and execution:** Docker was not recognized in PowerShell. The student created the separate empty hosted project neighborhood-lab5-rebuild, then ran the saved schema migration, security-hardening migration, and owner-delete follow-up in order. Each returned Success. No rows returned. The student reported a pre-run warning on the second file but did not retain its wording. Source inspection confirmed permission changes and four policy replacements; the exact warning cause remains unknown. The original development project and application configuration were retained.
+
+**Verification returned:** A read-only catalog query in the rebuild project returned inquiries/profiles/properties/property_sponsors/sponsors with RLS true and policy counts 3/2/6/3/2. The properties DELETE predicate requires matching auth.uid(), draft/rejected status, and a property_owner profile. This verifies schema reconstruction in the clean hosted environment; it does not claim CLI reset/history tracking, exhaustive catalog comparison, seeded accounts, or a fresh 23-check role run there. The earlier live-role and application evidence stays associated with the original development project.
+
+**Output retained:** Added lab5-rebuild-evidence.md with exact query/results and lab5-reflection.md as a reviewable contribution/reflection draft. Updated current handoff/database-design/verification and security documentation. The reflection distinguishes Pedro's execution/verification from ChatGPT/Codex drafting and Gemini Flash-Lite review. Anderson Mejia Sanchez is identified as assigned partner, with no invented completed contribution/review. Commit/PR/review/deployment links remain pending.
+
+**Verification of this update:** Documentation-only changes; no application code, migration files, test definitions, dependencies, remote database requests, reset, commit, push, or deployment was performed here. Prior AI-log entries were preserved.
