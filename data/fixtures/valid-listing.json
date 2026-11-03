@@ -1,0 +1,31 @@
+{
+  "property_id": "10000000-0000-4000-8000-000000000001",
+  "address": {
+    "street": "101 Fictional Vista Lane",
+    "city": "Pasadena",
+    "state": "CA"
+  },
+  "zip_code": "91101",
+  "price": 1150000,
+  "bedrooms": 3,
+  "bathrooms": 2.5,
+  "square_feet": 1950,
+  "amenities": [
+    "GARAGE_PARKING",
+    "AIR_CONDITIONING"
+  ],
+  "image_src": "/property-placeholder.svg",
+  "image_alt": "Fictional placeholder graphic representing a two-story craftsman home exterior.",
+  "listing_url": "https://example.com/listings/property-1",
+  "local_sponsors": [
+    {
+      "sponsor_id": "20000000-0000-4000-8000-000000000001",
+      "business_name": "Palisades Community Market - Demo Sponsor",
+      "tier": "standard",
+      "target_url": "https://example.com/sponsors/community-market",
+      "image_src": "/sponsor-market.svg",
+      "image_alt": "Illustration of a fictional community market storefront with fresh produce stands.",
+      "description": "Fictional demo sponsor representing a local community grocery market for testing."
+    }
+  ]
+}

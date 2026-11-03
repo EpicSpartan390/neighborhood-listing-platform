@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/property-dataset.schema.json",
+  "title": "SyntheticPropertyDataset",
+  "description": "A labeled collection of five fictional property records generated for course testing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "_metadata",
+    "records"
+  ],
+  "properties": {
+    "_metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "synthetic",
+        "schema_version",
+        "generated_by",
+        "purpose"
+      ],
+      "properties": {
+        "synthetic": {
+          "const": true
+        },
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "generated_by": {
+          "const": "Google AI Studio"
+        },
+        "purpose": {
+          "const": "Course lab seed fixtures only"
+        }
+      }
+    },
+    "records": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "$ref": "property.schema.json"
+      }
+    }
+  }
+}
