@@ -6,12 +6,14 @@ import {
 import { validatePropertyInput } from "@/schemas/property";
 
 const publicColumns = "id, address, price, bedrooms, bathrooms, square_feet";
+const publicColumnsWithSponsors =
+  `${publicColumns}, property_sponsors(sponsors(name, tier))`;
 
 export async function GET() {
   try {
     const { data, error } = await createSupabasePublicClient()
       .from("properties")
-      .select(publicColumns)
+      .select(publicColumnsWithSponsors)
       .eq("status", "approved")
       .order("created_at", { ascending: false });
 

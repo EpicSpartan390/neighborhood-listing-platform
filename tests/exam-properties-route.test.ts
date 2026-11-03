@@ -123,7 +123,7 @@ it("uses the verified owner and forces draft status", async () => {
   });
 });
 
-it("GET selects only public columns and filters approved properties", async () => {
+it("GET selects public columns and sponsor tiers for approved properties", async () => {
   const query = {
     select: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
@@ -136,7 +136,7 @@ it("GET selects only public columns and filters approved properties", async () =
 
   expect((await GET()).status).toBe(200);
   expect(query.select).toHaveBeenCalledWith(
-    "id, address, price, bedrooms, bathrooms, square_feet",
+    "id, address, price, bedrooms, bathrooms, square_feet, property_sponsors(sponsors(name, tier))",
   );
   expect(query.eq).toHaveBeenCalledWith("status", "approved");
   expect(mocks.serverClient).not.toHaveBeenCalled();
