@@ -26,7 +26,8 @@ Install the project packages:
 ```text
 npm install
 ```
-Live Deployment
-The production application is deployed on Vercel:
 
-https://neighborhood-listing-platform-lac.vercel.app
+## Deployments
+
+- Production: [https://neighborhood-listing-platform-lac.vercel.app](https://neighborhood-listing-platform-lac.vercel.app)
+- Midterm exam preview (`exam/practical-persistence-eval`, commit `5bac75b`): [https://neighborhood-listing-platform-git-exam-practical-e9cee0-igris9.vercel.app](https://neighborhood-listing-platform-git-exam-practical-e9cee0-igris9.vercel.app)

@@ -11,7 +11,9 @@ interface PropertyCardProps {
 
 export default function PropertyCard({ property }: PropertyCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const headingId = `property-${property.id}-heading`;
+  const detailsId = `property-${property.id}-details`;
 
   const formattedPrice = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -21,6 +23,10 @@ export default function PropertyCard({ property }: PropertyCardProps) {
 
   function handleFavoriteClick() {
     setIsFavorite((currentFavorite) => !currentFavorite);
+  }
+
+  function handleDetailsClick() {
+    setShowDetails((currentVisibility) => !currentVisibility);
   }
 
   return (
@@ -38,13 +44,15 @@ export default function PropertyCard({ property }: PropertyCardProps) {
       />
 
       <div className="flex flex-1 flex-col p-6">
-        <h3 id={headingId} className="text-xl font-semibold text-slate-100">
-          {property.address}
-        </h3>
+        <header>
+          <h3 id={headingId} className="text-xl font-semibold text-slate-100">
+            {property.address}
+          </h3>
 
-        <p className="mt-2 text-2xl font-bold text-emerald-400">
-          {formattedPrice}
-        </p>
+          <p className="mt-2 text-2xl font-bold text-emerald-400">
+            {formattedPrice}
+          </p>
+        </header>
 
         <ul
           aria-label={`Property facts for ${property.address}`}
@@ -55,29 +63,56 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           <li>{property.squareFeet.toLocaleString()} square feet</li>
         </ul>
 
-        <div className="mt-auto flex flex-col gap-3 pt-6 sm:flex-row">
+        <div className="mt-auto flex flex-wrap gap-3 pt-6">
           <button
             type="button"
             onClick={handleFavoriteClick}
             aria-pressed={isFavorite}
             aria-label={
-            isFavorite
-            ? `Saved: remove ${property.address} from favorites`
-           : `Save property: add ${property.address} to favorites`
+              isFavorite
+                ? `Saved: remove ${property.address} from favorites`
+                : `Save property: add ${property.address} to favorites`
             }
             className="inline-flex justify-center rounded-md border border-emerald-400 px-4 py-2 font-semibold text-emerald-300 hover:bg-emerald-400 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
           >
             {isFavorite ? "Saved" : "Save property"}
           </button>
 
-          <a
-            href={property.listingUrl}
-            aria-label={`View listing for ${property.address}`}
+          <button
+            type="button"
+            onClick={handleDetailsClick}
+            aria-expanded={showDetails}
+            aria-controls={detailsId}
+            aria-label={`${showDetails ? "Hide" : "View"} details for ${property.address}`}
             className="inline-flex justify-center rounded-md bg-emerald-400 px-4 py-2 font-semibold text-slate-950 hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
           >
-            View listing
-          </a>
+            {showDetails ? "Hide Details" : "View Details"}
+          </button>
+
+          {property.listingUrl ? (
+            <a
+              href={property.listingUrl}
+              aria-label={`View listing for ${property.address}`}
+              className="inline-flex justify-center rounded-md px-4 py-2 font-semibold text-emerald-300 underline hover:text-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+            >
+              View listing
+            </a>
+          ) : null}
         </div>
+
+        <section
+          id={detailsId}
+          hidden={!showDetails}
+          aria-label={`Details for ${property.address}`}
+          className="mt-4 rounded-md border border-slate-700 bg-slate-950 p-4 text-sm text-slate-200"
+        >
+          {showDetails ? (
+            <p>
+              {property.address} has {property.bedrooms} bedrooms, {property.bathrooms}{" "}
+              bathrooms, and {property.squareFeet.toLocaleString()} square feet.
+            </p>
+          ) : null}
+        </section>
       </div>
     </article>
   );
