@@ -655,4 +655,18 @@ This commit contains the Lab 5 implementation, test evidence, AI-review decision
 
 **Student verification:** Pedro copied the policy into the Lab 6 branch and reviewed its contents with `Get-Content`. The policy addresses the assignment's required eligibility, deterministic selection, fallback, disclosure, telemetry, and fairness rules. The Lab 6 database migration has not yet been applied to Supabase.
 
+**Commit:** **Commit:** 1ee8d4e - docs: define lab 6 sponsor eligibility policy
+
+## 2026-11-12 - Lab 6 database eligibility query
+
+**Tool:** ChatGPT/Codex
+
+**Student input:** Guide me step by step while I run every command. Help me add and verify the Lab 6 sponsor eligibility schema and query without changing the live Supabase project until the SQL has been tested locally.
+
+**Useful output:** The assistant explained the campaign fields, ZIP coverage table, restrained impression table, RLS policies, supporting indexes, and `get_eligible_sponsors` database function. During review, the existing `property_sponsors_public_select_approved` policy was strengthened so pending, paused, rejected, future, and expired campaigns do not expose sponsor links.
+
+**Rejected or deferred output:** The migration was not applied directly to hosted Supabase before local verification. No secret values, IP addresses, user identifiers, hidden profiling fields, or unsafe destination behavior were added. Application selection, redirect, disclosure UI, seeding, EXPLAIN evidence, and live Supabase verification remain pending.
+
+**Student verification:** Pedro ran `tests/lab6-migration.test.ts`; 3 of 3 tests passed. Pedro then ran the complete suite; 46 of 46 tests across 5 files passed. `npm.cmd run typecheck` also passed without errors.
+
 **Commit:** Pending
