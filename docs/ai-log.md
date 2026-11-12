@@ -642,3 +642,17 @@ Inspected the student's `lab5-live-evidence.json`: completed=true, 23 of 23 chec
 Implementation commit: `25e900a` — feat: complete Lab 5 database security and listing integration.
 
 This commit contains the Lab 5 implementation, test evidence, AI-review decisions, clean-rebuild evidence, and student-reviewed reflection.
+
+## 2026-11-12 - Lab 6 eligibility policy
+
+**Tool:** ChatGPT/Codex
+
+**Student input:** Help me begin Lab 6 step by step. I will run all commands. Explain what we are doing, where we are in the project, why we are doing it, and which assignment step we are completing.
+
+**Useful output:** The assistant helped draft explicit sponsor eligibility rules covering administrative approval, active status, placement, campaign dates, approved ZIP and radius coverage, impression caps, safe HTTPS destinations, visible disclosure, restrained telemetry, fallback behavior, and prohibited profiling. It also proposed a deterministic order of tier, distance, daily impressions, priority, and stable sponsor ID.
+
+**Rejected or deferred output:** No individualized profiling, caller identity, sensitive traits, raw IP storage, unsafe destinations, or discriminatory housing targeting will be used. Database integration, live migration execution, application code, and final verification remain pending.
+
+**Student verification:** Pedro copied the policy into the Lab 6 branch and reviewed its contents with `Get-Content`. The policy addresses the assignment's required eligibility, deterministic selection, fallback, disclosure, telemetry, and fairness rules. The Lab 6 database migration has not yet been applied to Supabase.
+
+**Commit:** Pending
