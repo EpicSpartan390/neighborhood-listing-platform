@@ -226,3 +226,263 @@ describe("Lab 6 sponsor migration and eligible query", () => {
     );
   });
 });
+describe("Lab 6 required eligibility edge cases", () => {
+  it("returns an exact ZIP match", async () => {
+    const result = await db.query<{
+      sponsor_id: string;
+      distance_miles: number;
+    }>(
+      `
+        select sponsor_id, distance_miles
+        from public.get_eligible_sponsors($1, $2, $3)
+      `,
+      [propertyId, "PROPERTY_DETAIL", "2026-11-12"],
+    );
+
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0].sponsor_id).toBe(
+      approvedSponsorId,
+    );
+    expect(
+      Number(result.rows[0].distance_miles),
+    ).toBe(0.4);
+  });
+
+  it("returns a nearby ZIP within the approved radius", async () => {
+    const nearbyPropertyId =
+      "10000000-0000-4000-8000-000000000102";
+
+    await db.exec(`
+      insert into public.properties(
+        id,
+        owner_id,
+        address,
+        price,
+        bedrooms,
+        bathrooms,
+        square_feet,
+        status,
+        postal_code
+      )
+      values (
+        '${nearbyPropertyId}',
+        '${ownerId}',
+        'Fictional nearby property',
+        450000,
+        2,
+        1,
+        1000,
+        'approved',
+        '90031'
+      );
+
+      insert into public.sponsor_zip_coverage(
+        sponsor_id,
+        postal_code,
+        distance_miles
+      )
+      values (
+        '${approvedSponsorId}',
+        '90031',
+        2.2
+      );
+    `);
+
+    const result = await db.query<{
+      sponsor_id: string;
+      distance_miles: number;
+    }>(
+      `
+        select sponsor_id, distance_miles
+        from public.get_eligible_sponsors($1, $2, $3)
+      `,
+      [
+        nearbyPropertyId,
+        "PROPERTY_DETAIL",
+        "2026-11-12",
+      ],
+    );
+
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0].sponsor_id).toBe(
+      approvedSponsorId,
+    );
+    expect(
+      Number(result.rows[0].distance_miles),
+    ).toBe(2.2);
+  });
+
+  it("excludes an inactive sponsor", async () => {
+    const inactiveSponsorId =
+      "20000000-0000-4000-8000-000000000103";
+
+    await db.exec(`
+      insert into public.sponsors(
+        id,
+        name,
+        tier,
+        active_status,
+        status,
+        placement,
+        start_date,
+        end_date,
+        home_postal_code,
+        radius_miles,
+        priority,
+        destination_url,
+        image_alt
+      )
+      values (
+        '${inactiveSponsorId}',
+        'Fictional Inactive Sponsor',
+        'platinum',
+        false,
+        'APPROVED',
+        'PROPERTY_DETAIL',
+        '2026-11-01',
+        '2026-11-30',
+        '90032',
+        5,
+        100,
+        'https://example.com/inactive',
+        'Illustration for an inactive fictional sponsor'
+      );
+
+      insert into public.sponsor_zip_coverage(
+        sponsor_id,
+        postal_code,
+        distance_miles
+      )
+      values (
+        '${inactiveSponsorId}',
+        '90032',
+        0.1
+      );
+    `);
+
+    const result = await db.query<{
+      sponsor_id: string;
+    }>(
+      `
+        select sponsor_id
+        from public.get_eligible_sponsors($1, $2, $3)
+      `,
+      [propertyId, "PROPERTY_DETAIL", "2026-11-12"],
+    );
+
+    expect(
+      result.rows.some(
+        (row) => row.sponsor_id === inactiveSponsorId,
+      ),
+    ).toBe(false);
+  });
+
+  it("excludes an expired campaign", async () => {
+    const expiredSponsorId =
+      "20000000-0000-4000-8000-000000000104";
+
+    await db.exec(`
+      insert into public.sponsors(
+        id,
+        name,
+        tier,
+        active_status,
+        status,
+        placement,
+        start_date,
+        end_date,
+        home_postal_code,
+        radius_miles,
+        priority,
+        destination_url,
+        image_alt
+      )
+      values (
+        '${expiredSponsorId}',
+        'Fictional Expired Sponsor',
+        'platinum',
+        true,
+        'APPROVED',
+        'PROPERTY_DETAIL',
+        '2026-10-01',
+        '2026-11-10',
+        '90032',
+        5,
+        100,
+        'https://example.com/expired',
+        'Illustration for an expired fictional sponsor'
+      );
+
+      insert into public.sponsor_zip_coverage(
+        sponsor_id,
+        postal_code,
+        distance_miles
+      )
+      values (
+        '${expiredSponsorId}',
+        '90032',
+        0.1
+      );
+    `);
+
+    const result = await db.query<{
+      sponsor_id: string;
+    }>(
+      `
+        select sponsor_id
+        from public.get_eligible_sponsors($1, $2, $3)
+      `,
+      [propertyId, "PROPERTY_DETAIL", "2026-11-12"],
+    );
+
+    expect(
+      result.rows.some(
+        (row) => row.sponsor_id === expiredSponsorId,
+      ),
+    ).toBe(false);
+  });
+
+  it("returns no candidate when ZIP coverage is absent", async () => {
+    const unmatchedPropertyId =
+      "10000000-0000-4000-8000-000000000103";
+
+    await db.exec(`
+      insert into public.properties(
+        id,
+        owner_id,
+        address,
+        price,
+        bedrooms,
+        bathrooms,
+        square_feet,
+        status,
+        postal_code
+      )
+      values (
+        '${unmatchedPropertyId}',
+        '${ownerId}',
+        'Fictional unmatched property',
+        300000,
+        1,
+        1,
+        800,
+        'approved',
+        '99999'
+      );
+    `);
+
+    const result = await db.query(
+      `
+        select sponsor_id
+        from public.get_eligible_sponsors($1, $2, $3)
+      `,
+      [
+        unmatchedPropertyId,
+        "PROPERTY_DETAIL",
+        "2026-11-12",
+      ],
+    );
+
+    expect(result.rows).toHaveLength(0);
+  });
+});

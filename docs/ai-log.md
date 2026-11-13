@@ -700,3 +700,19 @@ This commit contains the Lab 5 implementation, test evidence, AI-review decision
 **Student verification:** Pedro ran the focused fallback and placement tests; all 4 tests passed. Pedro then ran the complete suite; 56 of 56 tests across 8 files passed. TypeScript and ESLint both passed without errors.
 
 **Commit:** Pending
+
+## 2026-11-12 - Lab 6 eligibility edge-case tests
+
+**Tool:** ChatGPT/Codex
+
+**Related completed UI commit:** 5ed7b44 - feat: add sponsor disclosure and fallback UI
+
+**Student input:** Guide me step by step while I add the required deterministic eligibility edge cases for exact ZIP, nearby ZIP, inactive sponsors, expired campaigns, ties, and no matches.
+
+**Useful output:** The assistant provided disposable database tests for exact ZIP coverage, approved nearby ZIP coverage within radius, inactive sponsor exclusion, expired campaign exclusion, and absent ZIP coverage. Existing selector tests already cover deterministic ties and empty candidate lists.
+
+**Student verification:** Pedro ran the focused Lab 6 migration suite; 8 of 8 tests passed. Pedro then ran the complete project suite; 61 of 61 tests across 8 files passed. `npm.cmd run typecheck` passed without errors.
+
+**Privacy boundary:** All fixtures are fictional. The tests use property ZIP coverage and injected dates only; they do not use caller identity, IP addresses, protected characteristics, browsing history, or inferred traits.
+
+**Commit:** Pending
