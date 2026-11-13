@@ -661,7 +661,7 @@ This commit contains the Lab 5 implementation, test evidence, AI-review decision
 
 **Tool:** ChatGPT/Codex
 
-**Student input:** Guide me step by step while I run every command. Help me add and verify the Lab 6 sponsor eligibility schema and query without changing the live Supabase project until the SQL has been tested locally.
+**Student input:** Guide me step by step while I revise and adjust every command. Help me add and verify the Lab 6 sponsor eligibility schema and query without changing the live Supabase project until the SQL has been tested locally. Pedro applied the committed migration to the separate neighborhood-listing-lab6 Supabase project. Supabase reported success, and a read-only live metadata query returned 10 of 10 checks as true.
 
 **Useful output:** The assistant explained the campaign fields, ZIP coverage table, restrained impression table, RLS policies, supporting indexes, and `get_eligible_sponsors` database function. During review, the existing `property_sponsors_public_select_approved` policy was strengthened so pending, paused, rejected, future, and expired campaigns do not expose sponsor links.
 
@@ -669,4 +669,4 @@ This commit contains the Lab 5 implementation, test evidence, AI-review decision
 
 **Student verification:** Pedro ran `tests/lab6-migration.test.ts`; 3 of 3 tests passed. Pedro then ran the complete suite; 46 of 46 tests across 5 files passed. `npm.cmd run typecheck` also passed without errors.
 
-**Commit:** Pending
+**Commit:** ed44985 - feat: add lab 6 sponsor eligibility query
