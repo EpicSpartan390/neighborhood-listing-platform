@@ -684,3 +684,19 @@ This commit contains the Lab 5 implementation, test evidence, AI-review decision
 **Student verification:** Pedro ran the focused selector suite; 6 of 6 tests passed. Pedro then ran the complete project suite; 52 of 52 tests across 6 files passed. `npm.cmd run typecheck` passed without errors.
 
 **Commit:** Pending
+
+## 2026-11-12 - Lab 6 fallback and sponsored disclosure UI
+
+**Tool:** ChatGPT/Codex
+
+**Related completed selector commit:** b1b8c63 - feat: add deterministic sponsor selector
+
+**Student input:** Guide me step by step while I add a non-commercial house fallback and a sponsor placement with visible and accessible disclosure. Keep rendering separate from selection and do not expose the sponsor destination directly.
+
+**Useful output:** The assistant provided a `HouseSponsorFallback` component for null selections and a `SponsorPlacement` component for selected candidates. Paid placements display `Sponsored Partner` visibly and include the same commercial context in the aside and link accessible names. Sponsor links use the internal `/api/sponsor-click` route rather than placing the stored destination URL in the DOM.
+
+**Safety decision:** The fallback explicitly says it is not paid or sponsored. The paid component does not navigate directly to `destinationUrl`; the future server redirect route must validate the approved database record first. No caller identity, profiling data, or tracking identifier is rendered.
+
+**Student verification:** Pedro ran the focused fallback and placement tests; all 4 tests passed. Pedro then ran the complete suite; 56 of 56 tests across 8 files passed. TypeScript and ESLint both passed without errors.
+
+**Commit:** Pending
