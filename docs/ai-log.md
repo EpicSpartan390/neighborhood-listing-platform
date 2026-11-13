@@ -670,3 +670,17 @@ This commit contains the Lab 5 implementation, test evidence, AI-review decision
 **Student verification:** Pedro ran `tests/lab6-migration.test.ts`; 3 of 3 tests passed. Pedro then ran the complete suite; 46 of 46 tests across 5 files passed. `npm.cmd run typecheck` also passed without errors.
 
 **Commit:** ed44985 - feat: add lab 6 sponsor eligibility query
+
+## 2026-11-12 - Lab 6 pure sponsor selector
+
+**Tool:** ChatGPT/Codex
+
+**Student input:** Guide me step by step while I create a pure `selectSponsor(context, candidates)` function separately from database access and rendering. Include deterministic tests for the assignment dataset and ties.
+
+**Useful output:** The assistant provided a typed, non-mutating selector that orders eligible candidates by tier, distance, daily impressions, priority, and stable sponsor ID. The function returns `null` when no eligible candidate exists so the renderer can display the house-message fallback.
+
+**Boundary decision:** Administrative approval, activity, dates, placement, ZIP coverage, radius, and impression caps remain database-query responsibilities. Sponsor D is excluded by the eligibility query before candidates reach the selector. The selector uses no caller identity, sensitive traits, or individualized profiling.
+
+**Student verification:** Pedro ran the focused selector suite; 6 of 6 tests passed. Pedro then ran the complete project suite; 52 of 52 tests across 6 files passed. `npm.cmd run typecheck` passed without errors.
+
+**Commit:** Pending
