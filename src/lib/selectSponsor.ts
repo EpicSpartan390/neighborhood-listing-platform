@@ -30,13 +30,31 @@ const tierRank: Record<SponsorTier, number> = {
   bronze: 1,
 };
 
+function isValidIsoDate(value: string): boolean {
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(value) ||
+    value.startsWith("0000-")
+  ) {
+    return false;
+  }
+
+  const parsed = new Date(
+    `${value}T00:00:00.000Z`,
+  );
+
+  return (
+    !Number.isNaN(parsed.getTime()) &&
+    parsed.toISOString().slice(0, 10) === value
+  );
+}
+
 function hasValidContext(
   context: SponsorSelectionContext,
 ): boolean {
   return (
     context.propertyId.trim().length > 0 &&
     context.placement.trim().length > 0 &&
-    /^\d{4}-\d{2}-\d{2}$/.test(context.onDate)
+    isValidIsoDate(context.onDate)
   );
 }
 
@@ -72,14 +90,25 @@ function compareCandidates(
     return priorityDifference;
   }
 
-  return left.sponsorId.localeCompare(right.sponsorId);
+  if (left.sponsorId < right.sponsorId) {
+    return -1;
+  }
+
+  if (left.sponsorId > right.sponsorId) {
+    return 1;
+  }
+
+  return 0;
 }
 
 export function selectSponsor(
   context: SponsorSelectionContext,
   candidates: readonly SponsorCandidate[],
 ): SponsorCandidate | null {
-  if (!hasValidContext(context) || candidates.length === 0) {
+  if (
+    !hasValidContext(context) ||
+    candidates.length === 0
+  ) {
     return null;
   }
 
