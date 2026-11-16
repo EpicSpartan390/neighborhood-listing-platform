@@ -683,7 +683,7 @@ This commit contains the Lab 5 implementation, test evidence, AI-review decision
 
 **Student verification:** Pedro ran the focused selector suite; 6 of 6 tests passed. Pedro then ran the complete project suite; 52 of 52 tests across 6 files passed. `npm.cmd run typecheck` passed without errors.
 
-**Commit:** Pending
+**Commit:** b1b8c63 - feat: add deterministic sponsor selector
 
 ## 2026-11-12 - Lab 6 fallback and sponsored disclosure UI
 
@@ -699,7 +699,7 @@ This commit contains the Lab 5 implementation, test evidence, AI-review decision
 
 **Student verification:** Pedro ran the focused fallback and placement tests; all 4 tests passed. Pedro then ran the complete suite; 56 of 56 tests across 8 files passed. TypeScript and ESLint both passed without errors.
 
-**Commit:** Pending
+**Commit:** 5ed7b44 - feat: add sponsor disclosure and fallback UI
 
 ## 2026-11-12 - Lab 6 eligibility edge-case tests
 
@@ -714,5 +714,21 @@ This commit contains the Lab 5 implementation, test evidence, AI-review decision
 **Student verification:** Pedro ran the focused Lab 6 migration suite; 8 of 8 tests passed. Pedro then ran the complete project suite; 61 of 61 tests across 8 files passed. `npm.cmd run typecheck` passed without errors.
 
 **Privacy boundary:** All fixtures are fictional. The tests use property ZIP coverage and injected dates only; they do not use caller identity, IP addresses, protected characteristics, browsing history, or inferred traits.
+
+**Commit:** 05ac848 - test: add sponsor eligibility edge cases
+
+## 2026-11-16 - Lab 6 restrained impression telemetry
+
+**Tool:** ChatGPT/Codex
+
+**Related completed edge-case commit:** 05ac848 - test: add sponsor eligibility edge cases
+
+**Student input:** Guide me step by step while I add an impression event containing only sponsor ID, placement, a database-generated timestamp, and coarse page context. Do not collect IP addresses or user identity.
+
+**Useful output:** The assistant helped create an exact AJV input contract and an anonymous API route protected by database RLS. The route accepts only sponsor ID, placement, and coarse page context. PostgreSQL supplies the timestamp. Unknown fields are rejected, and database details are not exposed to clients.
+
+**Privacy decision:** The route does not read or store IP addresses, cookies, account IDs, email addresses, device identifiers, user-agent strings, or sensitive traits. An attempted IP-address field and an individualized page context are rejected before Supabase is called.
+
+**Student verification:** Pedro ran the focused impression-route suite; 5 of 5 tests passed. Pedro then ran the complete project suite; 66 of 66 tests across 9 files passed. TypeScript and ESLint both passed without errors.
 
 **Commit:** Pending
