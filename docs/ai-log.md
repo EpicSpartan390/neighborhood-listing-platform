@@ -731,4 +731,22 @@ This commit contains the Lab 5 implementation, test evidence, AI-review decision
 
 **Student verification:** Pedro ran the focused impression-route suite; 5 of 5 tests passed. Pedro then ran the complete project suite; 66 of 66 tests across 9 files passed. TypeScript and ESLint both passed without errors.
 
-**Commit:** Pending
+**Commit:** f305619 - feat: add privacy-restrained sponsor impressions
+
+## 2026-11-16 - Lab 6 safe sponsor click redirect
+
+**Tool:** ChatGPT/Codex
+
+**Implementation commit:** e6db352 - feat: add safe sponsor click redirect
+
+**Student input:** Guide me step by step while I add a click redirect route that retrieves the destination from the approved sponsor record and rejects unsafe URLs. Include a valid URL test, an unsafe payload test, and the exact safe error returned to the client.
+
+**Useful output:** The assistant helped create a pure destination validator and a server redirect route. The route accepts only a sponsor UUID, retrieves `destination_url` from an approved and active database record, validates it at runtime, and redirects with `Cache-Control: no-store` and `Referrer-Policy: no-referrer`.
+
+**Safety decision:** The validator permits only HTTPS URLs with public-looking hostnames. It rejects HTTP, JavaScript URLs, malformed URLs, credentials, localhost, raw IPv4 and IPv6 hosts, and nonstandard ports. The client cannot submit a destination URL directly.
+
+**Valid test:** `https://partners.example.com/offers` passes.
+
+**Unsafe test:** `javascript:alert(1)` is rejected with `{"error":{"code":"UNSAFE_SPONSOR_URL","message":"Sponsor destination is not an approved HTTPS URL."}}`.
+
+**Student verification:** Pedro ran the focused URL and redirect suite; 12 of 12 tests passed. Pedro then ran the complete project suite; 78 of 78 tests across 10 files passed. TypeScript and ESLint both passed without errors.
