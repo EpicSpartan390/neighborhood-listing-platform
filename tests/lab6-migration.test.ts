@@ -17,7 +17,10 @@ beforeAll(async () => {
     create role service_role bypassrls;
 
     create schema auth;
-    create table auth.users(id uuid primary key);
+    create table auth.users(
+    id uuid primary key,
+    email text unique
+    );
 
     create function auth.uid()
     returns uuid
@@ -60,8 +63,11 @@ beforeAll(async () => {
   }
 
   await db.exec(`
-    insert into auth.users(id)
-    values ('${ownerId}');
+    insert into auth.users(id, email)
+    values (
+      '${ownerId}',
+      'lab6.owner@example.com'
+    );
 
     insert into public.profiles(id, role)
     values ('${ownerId}', 'property_owner');
@@ -790,5 +796,163 @@ describe("Lab 6 function permission hardening", () => {
     } finally {
       await db.exec("rollback");
     }
+  });
+});
+
+describe("Lab 6 fictional demonstration seed", () => {
+  it("creates six sponsors and three predictable outcomes", async () => {
+    const seed = await readFile(
+      new URL(
+        "../supabase/seeds/lab6_demo.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    );
+
+    await db.exec(seed);
+
+    const sponsorCount = await db.query<{
+      count: bigint;
+    }>(`
+      select count(*)::bigint as count
+      from public.sponsors
+      where id in (
+        '20000000-0000-4000-8000-0000000000a1',
+        '20000000-0000-4000-8000-0000000000b2',
+        '20000000-0000-4000-8000-0000000000c3',
+        '20000000-0000-4000-8000-0000000000d4',
+        '20000000-0000-4000-8000-0000000000e5',
+        '20000000-0000-4000-8000-0000000000f6'
+      )
+    `);
+
+    const propertyCount = await db.query<{
+      count: bigint;
+    }>(`
+      select count(*)::bigint as count
+      from public.properties
+      where id in (
+        '10000000-0000-4000-8000-000000009032',
+        '10000000-0000-4000-8000-000000009031',
+        '10000000-0000-4000-8000-000000009033'
+      )
+    `);
+
+    expect(Number(sponsorCount.rows[0].count)).toBe(6);
+    expect(Number(propertyCount.rows[0].count)).toBe(3);
+    const demoSponsorIds = new Set([
+      "20000000-0000-4000-8000-0000000000a1",
+      "20000000-0000-4000-8000-0000000000b2",
+      "20000000-0000-4000-8000-0000000000c3",
+      "20000000-0000-4000-8000-0000000000d4",
+      "20000000-0000-4000-8000-0000000000e5",
+      "20000000-0000-4000-8000-0000000000f6",
+    ]);
+
+    type CandidateRow = {
+      sponsor_id: string;
+      sponsor_name: string;
+      tier:
+        | "platinum"
+        | "gold"
+        | "silver"
+        | "bronze";
+      destination_url: string;
+      sponsor_description: string | null;
+      image_path: string | null;
+      image_alt: string;
+      distance_miles: number;
+      daily_impressions: bigint;
+      priority: number;
+    };
+
+    async function candidatesFor(
+      selectedPropertyId: string,
+    ) {
+      const result = await db.query<CandidateRow>(
+        `
+          select *
+          from public.get_current_eligible_sponsors(
+            $1,
+            $2
+          )
+        `,
+        [
+          selectedPropertyId,
+          "PROPERTY_DETAIL",
+        ],
+      );
+
+      return result.rows
+        .filter((row) =>
+          demoSponsorIds.has(row.sponsor_id),
+        )
+        .map((row) => ({
+        sponsorId: row.sponsor_id,
+        sponsorName: row.sponsor_name,
+        tier: row.tier,
+        destinationUrl: row.destination_url,
+        sponsorDescription:
+          row.sponsor_description,
+        imagePath: row.image_path,
+        imageAlt: row.image_alt,
+        distanceMiles:
+          Number(row.distance_miles),
+        dailyImpressions:
+          Number(row.daily_impressions),
+        priority: row.priority,
+      }));
+    }
+
+    const { selectSponsor } = await import(
+      "../src/lib/selectSponsor"
+    );
+
+    const onDate =
+      new Date().toISOString().slice(0, 10);
+
+    const zip90032 = selectSponsor(
+      {
+        propertyId:
+          "10000000-0000-4000-8000-000000009032",
+        placement: "PROPERTY_DETAIL",
+        onDate,
+      },
+      await candidatesFor(
+        "10000000-0000-4000-8000-000000009032",
+      ),
+    );
+
+    const zip90031 = selectSponsor(
+      {
+        propertyId:
+          "10000000-0000-4000-8000-000000009031",
+        placement: "PROPERTY_DETAIL",
+        onDate,
+      },
+      await candidatesFor(
+        "10000000-0000-4000-8000-000000009031",
+      ),
+    );
+
+    const zip90033 = selectSponsor(
+      {
+        propertyId:
+          "10000000-0000-4000-8000-000000009033",
+        placement: "PROPERTY_DETAIL",
+        onDate,
+      },
+      await candidatesFor(
+        "10000000-0000-4000-8000-000000009033",
+      ),
+    );
+
+    expect(zip90032?.sponsorName).toBe(
+      "Sponsor C - Fictional Gold Market",
+    );
+    expect(zip90031?.sponsorName).toBe(
+      "Sponsor E - Fictional Gold Community Cafe",
+    );
+    expect(zip90033).toBeNull();
   });
 });
