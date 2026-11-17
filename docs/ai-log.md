@@ -750,3 +750,21 @@ This commit contains the Lab 5 implementation, test evidence, AI-review decision
 **Unsafe test:** `javascript:alert(1)` is rejected with `{"error":{"code":"UNSAFE_SPONSOR_URL","message":"Sponsor destination is not an approved HTTPS URL."}}`.
 
 **Student verification:** Pedro ran the focused URL and redirect suite; 12 of 12 tests passed. Pedro then ran the complete project suite; 78 of 78 tests across 10 files passed. TypeScript and ESLint both passed without errors.
+
+## 2026-11-16 - Lab 6 ChatGPT and Gemini adversarial review
+
+**Tools:** ChatGPT/Codex and Gemini
+
+**Prompt:** Act as an adversarial tester for this contextual sponsor-selection function. Generate boundary cases involving dates, ZIP codes, empty data, ties, unapproved records, impression caps, database permissions, and unsafe URLs. Do not propose user profiling.
+
+**Useful output accepted:** Invalid calendar dates; locale-independent stable ties; inclusive campaign dates; future-campaign exclusion; exact radius boundaries; exact daily-cap exclusion; leading-zero ZIP preservation; inverted campaign dates; encoded IP and obfuscated URL rejection; caller-supplied redirect-parameter rejection; and prevention of anonymous arbitrary-date eligibility queries.
+
+**Output already covered:** Empty candidates and house fallback; pending, inactive, and expired campaigns; deterministic ties; click-time sponsor revalidation; malformed IDs; common unsafe URL schemes; raw database-error suppression; and public query field minimization.
+
+**Rejected or deferred output:** Sensitive or individualized targeting was rejected. PostGIS antimeridian testing does not apply because the class version uses approved stored ZIP distances rather than live coordinate calculations. Multi-ZIP fan-out does not apply because matching joins one property ZIP and the database key prevents duplicate sponsor/ZIP rows. Floating geographic jitter is constrained by `numeric(6,2)`. A real 50-request concurrency stress test was deferred because proving a hard cap under concurrency requires an atomic reservation design and a real hosted-database load test; no false completion claim was made.
+
+**Changes made:** Strict real-date validation, explicit ASCII sponsor-ID ordering, database boundary tests, encoded-URL tests, redirect-injection tests, and a follow-up migration that blocks public access to the arbitrary-date function while granting access to a current-date wrapper.
+
+**Student verification:** Pedro verified 6 of 6 selector adversarial tests, 16 of 16 database tests, and 20 of 20 URL/redirect tests. The complete project suite passed 100 of 100 tests across 11 files. TypeScript and ESLint passed. The follow-up migration succeeded in the separate Lab 6 Supabase project, and all 5 live permission checks returned true.
+
+**Implementation commits:** `0221976` - harden sponsor date and tie handling; `d859c4c` - harden sponsor boundaries and permissions.
