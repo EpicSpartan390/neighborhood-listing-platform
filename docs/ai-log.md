@@ -782,3 +782,19 @@ This commit contains the Lab 5 implementation, test evidence, AI-review decision
 **Decision:** No additional index was added. The current indexes support the eligibility filters, joins, radius check, and UTC daily impression range. A wider impression index was deferred unless representative production data demonstrates that the placement post-filter is expensive.
 
 **Student verification:** Pedro ran the live index inventory and EXPLAIN query in the separate `neighborhood-listing-lab6` Supabase project. `ANALYZE` was disabled, so the query was not executed and no application data or telemetry was changed.
+
+## 2026-11-17 - Lab 6 fictional seed and predictable outcomes
+
+**Tool:** ChatGPT/Codex
+
+**Implementation commit:** bf7f088 - feat: add deterministic sponsor demo seed
+
+**Student input:** Guide me step by step while I create at least six fictional sponsors across three ZIP codes and demonstrate three properties with predictable sponsor outcomes. Do not include a password, secret, or real personal data.
+
+**Useful output:** The assistant helped create a repeatable fictional seed containing one property-owner profile, three approved properties, six sponsors, approved ZIP coverage, and coarse fictional impression counts. The seed contains no password and locates the fictional Auth user by email.
+
+**Safety decision:** Rerunning the seed resets only the current UTC day's impression rows for six fixed fictional sponsor IDs. It does not delete unrelated users, properties, sponsors, coverage, or telemetry.
+
+**Student verification:** Pedro locally verified the seed with the full matching pipeline. All 17 database tests passed, and the complete project suite passed 101 of 101 tests across 11 files. TypeScript and ESLint passed. Pedro applied the seed to the separate Lab 6 Supabase project and ran a read-only demonstration query.
+
+**Live outcomes:** ZIP `90031` selected Sponsor E; ZIP `90032` selected Sponsor C; ZIP `90033` produced the house fallback because the only local campaign was expired.
