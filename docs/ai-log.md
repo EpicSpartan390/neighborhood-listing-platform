@@ -642,3 +642,159 @@ Inspected the student's `lab5-live-evidence.json`: completed=true, 23 of 23 chec
 Implementation commit: `25e900a` — feat: complete Lab 5 database security and listing integration.
 
 This commit contains the Lab 5 implementation, test evidence, AI-review decisions, clean-rebuild evidence, and student-reviewed reflection.
+
+## 2026-11-12 - Lab 6 eligibility policy
+
+**Tool:** ChatGPT/Codex
+
+**Student input:** Help me begin Lab 6 step by step. I will run all commands. Explain what we are doing, where we are in the project, why we are doing it, and which assignment step we are completing.
+
+**Useful output:** The assistant helped draft explicit sponsor eligibility rules covering administrative approval, active status, placement, campaign dates, approved ZIP and radius coverage, impression caps, safe HTTPS destinations, visible disclosure, restrained telemetry, fallback behavior, and prohibited profiling. It also proposed a deterministic order of tier, distance, daily impressions, priority, and stable sponsor ID.
+
+**Rejected or deferred output:** No individualized profiling, caller identity, sensitive traits, raw IP storage, unsafe destinations, or discriminatory housing targeting will be used. Database integration, live migration execution, application code, and final verification remain pending.
+
+**Student verification:** Pedro copied the policy into the Lab 6 branch and reviewed its contents with `Get-Content`. The policy addresses the assignment's required eligibility, deterministic selection, fallback, disclosure, telemetry, and fairness rules. The Lab 6 database migration has not yet been applied to Supabase.
+
+**Commit:** **Commit:** 1ee8d4e - docs: define lab 6 sponsor eligibility policy
+
+## 2026-11-12 - Lab 6 database eligibility query
+
+**Tool:** ChatGPT/Codex
+
+**Student input:** Guide me step by step while I revise and adjust every command. Help me add and verify the Lab 6 sponsor eligibility schema and query without changing the live Supabase project until the SQL has been tested locally. Pedro applied the committed migration to the separate neighborhood-listing-lab6 Supabase project. Supabase reported success, and a read-only live metadata query returned 10 of 10 checks as true.
+
+**Useful output:** The assistant explained the campaign fields, ZIP coverage table, restrained impression table, RLS policies, supporting indexes, and `get_eligible_sponsors` database function. During review, the existing `property_sponsors_public_select_approved` policy was strengthened so pending, paused, rejected, future, and expired campaigns do not expose sponsor links.
+
+**Rejected or deferred output:** The migration was not applied directly to hosted Supabase before local verification. No secret values, IP addresses, user identifiers, hidden profiling fields, or unsafe destination behavior were added. Application selection, redirect, disclosure UI, seeding, EXPLAIN evidence, and live Supabase verification remain pending.
+
+**Student verification:** Pedro ran `tests/lab6-migration.test.ts`; 3 of 3 tests passed. Pedro then ran the complete suite; 46 of 46 tests across 5 files passed. `npm.cmd run typecheck` also passed without errors.
+
+**Commit:** ed44985 - feat: add lab 6 sponsor eligibility query
+
+## 2026-11-12 - Lab 6 pure sponsor selector
+
+**Tool:** ChatGPT/Codex
+
+**Student input:** Guide me step by step while I create a pure `selectSponsor(context, candidates)` function separately from database access and rendering. Include deterministic tests for the assignment dataset and ties.
+
+**Useful output:** The assistant provided a typed, non-mutating selector that orders eligible candidates by tier, distance, daily impressions, priority, and stable sponsor ID. The function returns `null` when no eligible candidate exists so the renderer can display the house-message fallback.
+
+**Boundary decision:** Administrative approval, activity, dates, placement, ZIP coverage, radius, and impression caps remain database-query responsibilities. Sponsor D is excluded by the eligibility query before candidates reach the selector. The selector uses no caller identity, sensitive traits, or individualized profiling.
+
+**Student verification:** Pedro ran the focused selector suite; 6 of 6 tests passed. Pedro then ran the complete project suite; 52 of 52 tests across 6 files passed. `npm.cmd run typecheck` passed without errors.
+
+**Commit:** b1b8c63 - feat: add deterministic sponsor selector
+
+## 2026-11-12 - Lab 6 fallback and sponsored disclosure UI
+
+**Tool:** ChatGPT/Codex
+
+**Related completed selector commit:** b1b8c63 - feat: add deterministic sponsor selector
+
+**Student input:** Guide me step by step while I add a non-commercial house fallback and a sponsor placement with visible and accessible disclosure. Keep rendering separate from selection and do not expose the sponsor destination directly.
+
+**Useful output:** The assistant provided a `HouseSponsorFallback` component for null selections and a `SponsorPlacement` component for selected candidates. Paid placements display `Sponsored Partner` visibly and include the same commercial context in the aside and link accessible names. Sponsor links use the internal `/api/sponsor-click` route rather than placing the stored destination URL in the DOM.
+
+**Safety decision:** The fallback explicitly says it is not paid or sponsored. The paid component does not navigate directly to `destinationUrl`; the future server redirect route must validate the approved database record first. No caller identity, profiling data, or tracking identifier is rendered.
+
+**Student verification:** Pedro ran the focused fallback and placement tests; all 4 tests passed. Pedro then ran the complete suite; 56 of 56 tests across 8 files passed. TypeScript and ESLint both passed without errors.
+
+**Commit:** 5ed7b44 - feat: add sponsor disclosure and fallback UI
+
+## 2026-11-12 - Lab 6 eligibility edge-case tests
+
+**Tool:** ChatGPT/Codex
+
+**Related completed UI commit:** 5ed7b44 - feat: add sponsor disclosure and fallback UI
+
+**Student input:** Guide me step by step while I add the required deterministic eligibility edge cases for exact ZIP, nearby ZIP, inactive sponsors, expired campaigns, ties, and no matches.
+
+**Useful output:** The assistant provided disposable database tests for exact ZIP coverage, approved nearby ZIP coverage within radius, inactive sponsor exclusion, expired campaign exclusion, and absent ZIP coverage. Existing selector tests already cover deterministic ties and empty candidate lists.
+
+**Student verification:** Pedro ran the focused Lab 6 migration suite; 8 of 8 tests passed. Pedro then ran the complete project suite; 61 of 61 tests across 8 files passed. `npm.cmd run typecheck` passed without errors.
+
+**Privacy boundary:** All fixtures are fictional. The tests use property ZIP coverage and injected dates only; they do not use caller identity, IP addresses, protected characteristics, browsing history, or inferred traits.
+
+**Commit:** 05ac848 - test: add sponsor eligibility edge cases
+
+## 2026-11-16 - Lab 6 restrained impression telemetry
+
+**Tool:** ChatGPT/Codex
+
+**Related completed edge-case commit:** 05ac848 - test: add sponsor eligibility edge cases
+
+**Student input:** Guide me step by step while I add an impression event containing only sponsor ID, placement, a database-generated timestamp, and coarse page context. Do not collect IP addresses or user identity.
+
+**Useful output:** The assistant helped create an exact AJV input contract and an anonymous API route protected by database RLS. The route accepts only sponsor ID, placement, and coarse page context. PostgreSQL supplies the timestamp. Unknown fields are rejected, and database details are not exposed to clients.
+
+**Privacy decision:** The route does not read or store IP addresses, cookies, account IDs, email addresses, device identifiers, user-agent strings, or sensitive traits. An attempted IP-address field and an individualized page context are rejected before Supabase is called.
+
+**Student verification:** Pedro ran the focused impression-route suite; 5 of 5 tests passed. Pedro then ran the complete project suite; 66 of 66 tests across 9 files passed. TypeScript and ESLint both passed without errors.
+
+**Commit:** f305619 - feat: add privacy-restrained sponsor impressions
+
+## 2026-11-16 - Lab 6 safe sponsor click redirect
+
+**Tool:** ChatGPT/Codex
+
+**Implementation commit:** e6db352 - feat: add safe sponsor click redirect
+
+**Student input:** Guide me step by step while I add a click redirect route that retrieves the destination from the approved sponsor record and rejects unsafe URLs. Include a valid URL test, an unsafe payload test, and the exact safe error returned to the client.
+
+**Useful output:** The assistant helped create a pure destination validator and a server redirect route. The route accepts only a sponsor UUID, retrieves `destination_url` from an approved and active database record, validates it at runtime, and redirects with `Cache-Control: no-store` and `Referrer-Policy: no-referrer`.
+
+**Safety decision:** The validator permits only HTTPS URLs with public-looking hostnames. It rejects HTTP, JavaScript URLs, malformed URLs, credentials, localhost, raw IPv4 and IPv6 hosts, and nonstandard ports. The client cannot submit a destination URL directly.
+
+**Valid test:** `https://partners.example.com/offers` passes.
+
+**Unsafe test:** `javascript:alert(1)` is rejected with `{"error":{"code":"UNSAFE_SPONSOR_URL","message":"Sponsor destination is not an approved HTTPS URL."}}`.
+
+**Student verification:** Pedro ran the focused URL and redirect suite; 12 of 12 tests passed. Pedro then ran the complete project suite; 78 of 78 tests across 10 files passed. TypeScript and ESLint both passed without errors.
+
+## 2026-11-16 - Lab 6 ChatGPT and Gemini adversarial review
+
+**Tools:** ChatGPT/Codex and Gemini
+
+**Prompt:** Act as an adversarial tester for this contextual sponsor-selection function. Generate boundary cases involving dates, ZIP codes, empty data, ties, unapproved records, impression caps, database permissions, and unsafe URLs. Do not propose user profiling.
+
+**Useful output accepted:** Invalid calendar dates; locale-independent stable ties; inclusive campaign dates; future-campaign exclusion; exact radius boundaries; exact daily-cap exclusion; leading-zero ZIP preservation; inverted campaign dates; encoded IP and obfuscated URL rejection; caller-supplied redirect-parameter rejection; and prevention of anonymous arbitrary-date eligibility queries.
+
+**Output already covered:** Empty candidates and house fallback; pending, inactive, and expired campaigns; deterministic ties; click-time sponsor revalidation; malformed IDs; common unsafe URL schemes; raw database-error suppression; and public query field minimization.
+
+**Rejected or deferred output:** Sensitive or individualized targeting was rejected. PostGIS antimeridian testing does not apply because the class version uses approved stored ZIP distances rather than live coordinate calculations. Multi-ZIP fan-out does not apply because matching joins one property ZIP and the database key prevents duplicate sponsor/ZIP rows. Floating geographic jitter is constrained by `numeric(6,2)`. A real 50-request concurrency stress test was deferred because proving a hard cap under concurrency requires an atomic reservation design and a real hosted-database load test; no false completion claim was made.
+
+**Changes made:** Strict real-date validation, explicit ASCII sponsor-ID ordering, database boundary tests, encoded-URL tests, redirect-injection tests, and a follow-up migration that blocks public access to the arbitrary-date function while granting access to a current-date wrapper.
+
+**Student verification:** Pedro verified 6 of 6 selector adversarial tests, 16 of 16 database tests, and 20 of 20 URL/redirect tests. The complete project suite passed 100 of 100 tests across 11 files. TypeScript and ESLint passed. The follow-up migration succeeded in the separate Lab 6 Supabase project, and all 5 live permission checks returned true.
+
+**Implementation commits:** `0221976` - harden sponsor date and tie handling; `d859c4c` - harden sponsor boundaries and permissions.
+
+## 2026-11-17 - Lab 6 query performance verification
+
+**Tool:** ChatGPT/Codex
+
+**Evidence commit:** 9d4aee3 - docs: record sponsor query explain plan
+
+**Student input:** Guide me through a read-only live EXPLAIN plan for the sponsor eligibility query. Explain which indexes are used and add no index unless the plan justifies it.
+
+**Useful output:** The assistant provided a non-executing EXPLAIN query and interpreted the live PostgreSQL plan. The planner used `sponsors_eligibility_idx`, `properties_pkey`, `sponsor_zip_coverage_pkey`, and `sponsor_impressions_daily_idx`. The estimated total cost was 9.58 for one result row, with no sequential scan.
+
+**Decision:** No additional index was added. The current indexes support the eligibility filters, joins, radius check, and UTC daily impression range. A wider impression index was deferred unless representative production data demonstrates that the placement post-filter is expensive.
+
+**Student verification:** Pedro ran the live index inventory and EXPLAIN query in the separate `neighborhood-listing-lab6` Supabase project. `ANALYZE` was disabled, so the query was not executed and no application data or telemetry was changed.
+
+## 2026-11-17 - Lab 6 fictional seed and predictable outcomes
+
+**Tool:** ChatGPT/Codex
+
+**Implementation commit:** bf7f088 - feat: add deterministic sponsor demo seed
+
+**Student input:** Guide me step by step while I create at least six fictional sponsors across three ZIP codes and demonstrate three properties with predictable sponsor outcomes. Do not include a password, secret, or real personal data.
+
+**Useful output:** The assistant helped create a repeatable fictional seed containing one property-owner profile, three approved properties, six sponsors, approved ZIP coverage, and coarse fictional impression counts. The seed contains no password and locates the fictional Auth user by email.
+
+**Safety decision:** Rerunning the seed resets only the current UTC day's impression rows for six fixed fictional sponsor IDs. It does not delete unrelated users, properties, sponsors, coverage, or telemetry.
+
+**Student verification:** Pedro locally verified the seed with the full matching pipeline. All 17 database tests passed, and the complete project suite passed 101 of 101 tests across 11 files. TypeScript and ESLint passed. Pedro applied the seed to the separate Lab 6 Supabase project and ran a read-only demonstration query.
+
+**Live outcomes:** ZIP `90031` selected Sponsor E; ZIP `90032` selected Sponsor C; ZIP `90033` produced the house fallback because the only local campaign was expired.
