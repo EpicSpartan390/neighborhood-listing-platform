@@ -39,6 +39,7 @@ beforeAll(async () => {
     "20261029150000_exam_security_hardening.sql",
     "20261103000000_lab5_owner_delete_unapproved.sql",
     "20261112000000_lab6_sponsor_matching.sql",
+    "20261116000000_lab6_adversarial_hardening.sql",
   ];
 
   for (const migrationName of migrationNames) {
@@ -484,5 +485,310 @@ describe("Lab 6 required eligibility edge cases", () => {
     );
 
     expect(result.rows).toHaveLength(0);
+  });
+});
+
+describe("Lab 6 adversarial database boundaries", () => {
+  async function eligibleIds(
+    selectedPropertyId: string,
+    onDate: string,
+  ) {
+    const result = await db.query<{
+      sponsor_id: string;
+    }>(
+      `
+        select sponsor_id
+        from public.get_eligible_sponsors($1, $2, $3)
+      `,
+      [
+        selectedPropertyId,
+        "PROPERTY_DETAIL",
+        onDate,
+      ],
+    );
+
+    return result.rows.map(
+      (row) => row.sponsor_id,
+    );
+  }
+
+  async function addApprovedSponsor({
+    id,
+    startDate,
+    endDate,
+    radius,
+    distance,
+    postalCode = "90032",
+  }: {
+    id: string;
+    startDate: string;
+    endDate: string;
+    radius: number;
+    distance: number;
+    postalCode?: string;
+  }) {
+    await db.exec(`
+      insert into public.sponsors(
+        id,
+        name,
+        tier,
+        active_status,
+        status,
+        placement,
+        start_date,
+        end_date,
+        home_postal_code,
+        radius_miles,
+        priority,
+        destination_url,
+        image_alt
+      )
+      values (
+        '${id}',
+        'Fictional Adversarial Sponsor',
+        'gold',
+        true,
+        'APPROVED',
+        'PROPERTY_DETAIL',
+        '${startDate}',
+        '${endDate}',
+        '${postalCode}',
+        ${radius},
+        10,
+        'https://example.com/adversarial',
+        'Illustration for an adversarial sponsor'
+      );
+
+      insert into public.sponsor_zip_coverage(
+        sponsor_id,
+        postal_code,
+        distance_miles
+      )
+      values (
+        '${id}',
+        '${postalCode}',
+        ${distance}
+      );
+    `);
+  }
+
+  it("includes both exact campaign date boundaries", async () => {
+    expect(
+      await eligibleIds(propertyId, "2026-11-01"),
+    ).toContain(approvedSponsorId);
+
+    expect(
+      await eligibleIds(propertyId, "2026-11-30"),
+    ).toContain(approvedSponsorId);
+  });
+
+  it("excludes a campaign that starts tomorrow", async () => {
+    const futureId =
+      "20000000-0000-4000-8000-000000000105";
+
+    await addApprovedSponsor({
+      id: futureId,
+      startDate: "2026-11-17",
+      endDate: "2026-11-30",
+      radius: 5,
+      distance: 0.1,
+    });
+
+    expect(
+      await eligibleIds(propertyId, "2026-11-16"),
+    ).not.toContain(futureId);
+  });
+
+  it("includes exact radius and excludes over radius", async () => {
+    const boundaryId =
+      "20000000-0000-4000-8000-000000000106";
+    const overRadiusId =
+      "20000000-0000-4000-8000-000000000107";
+
+    await addApprovedSponsor({
+      id: boundaryId,
+      startDate: "2026-11-01",
+      endDate: "2026-11-30",
+      radius: 5,
+      distance: 5,
+    });
+
+    await addApprovedSponsor({
+      id: overRadiusId,
+      startDate: "2026-11-01",
+      endDate: "2026-11-30",
+      radius: 5,
+      distance: 5.01,
+    });
+
+    const ids = await eligibleIds(
+      propertyId,
+      "2026-11-16",
+    );
+
+    expect(ids).toContain(boundaryId);
+    expect(ids).not.toContain(overRadiusId);
+  });
+
+  it("excludes a sponsor exactly at its daily cap", async () => {
+    await db.exec(`
+      insert into public.sponsor_impressions(
+        sponsor_id,
+        placement,
+        occurred_at,
+        page_context
+      )
+      select
+        '${approvedSponsorId}',
+        'PROPERTY_DETAIL',
+        '2026-11-12 12:00:00+00',
+        'property_detail'
+      from generate_series(1, 99);
+    `);
+
+    expect(
+      await eligibleIds(propertyId, "2026-11-12"),
+    ).toContain(approvedSponsorId);
+
+    await db.exec(`
+      insert into public.sponsor_impressions(
+        sponsor_id,
+        placement,
+        occurred_at,
+        page_context
+      )
+      values (
+        '${approvedSponsorId}',
+        'PROPERTY_DETAIL',
+        '2026-11-12 12:01:00+00',
+        'property_detail'
+      );
+    `);
+
+    expect(
+      await eligibleIds(propertyId, "2026-11-12"),
+    ).not.toContain(approvedSponsorId);
+  });
+
+  it("preserves a leading-zero ZIP code", async () => {
+    const leadingZeroPropertyId =
+      "10000000-0000-4000-8000-000000000104";
+
+    await db.exec(`
+      insert into public.properties(
+        id,
+        owner_id,
+        address,
+        price,
+        bedrooms,
+        bathrooms,
+        square_feet,
+        status,
+        postal_code
+      )
+      values (
+        '${leadingZeroPropertyId}',
+        '${ownerId}',
+        'Fictional leading-zero ZIP property',
+        350000,
+        2,
+        1,
+        900,
+        'approved',
+        '02138'
+      );
+
+      insert into public.sponsor_zip_coverage(
+        sponsor_id,
+        postal_code,
+        distance_miles
+      )
+      values (
+        '${approvedSponsorId}',
+        '02138',
+        1.5
+      );
+    `);
+
+    expect(
+      await eligibleIds(
+        leadingZeroPropertyId,
+        "2026-11-13",
+      ),
+    ).toContain(approvedSponsorId);
+  });
+
+  it("rejects an inverted campaign date range", async () => {
+    await expect(
+      db.exec(`
+        insert into public.sponsors(
+          id,
+          name,
+          tier,
+          start_date,
+          end_date
+        )
+        values (
+          '20000000-0000-4000-8000-000000000108',
+          'Fictional Inverted Date Sponsor',
+          'bronze',
+          '2026-12-01',
+          '2026-11-01'
+        );
+      `),
+    ).rejects.toThrow();
+  });
+});
+
+describe("Lab 6 function permission hardening", () => {
+  it("denies anonymous arbitrary-date eligibility queries", async () => {
+    await db.exec("begin");
+
+    try {
+      await db.exec("set local role anon");
+
+      await expect(
+        db.query(
+          `
+            select *
+            from public.get_eligible_sponsors(
+              $1,
+              $2,
+              $3
+            )
+          `,
+          [
+            propertyId,
+            "PROPERTY_DETAIL",
+            "2099-01-01",
+          ],
+        ),
+      ).rejects.toThrow();
+    } finally {
+      await db.exec("rollback");
+    }
+  });
+
+  it("allows the anonymous current-date wrapper", async () => {
+    await db.exec("begin");
+
+    try {
+      await db.exec("set local role anon");
+
+      const result = await db.query(
+        `
+          select *
+          from public.get_current_eligible_sponsors(
+            $1,
+            $2
+          )
+        `,
+        [propertyId, "PROPERTY_DETAIL"],
+      );
+
+      expect(Array.isArray(result.rows)).toBe(true);
+    } finally {
+      await db.exec("rollback");
+    }
   });
 });

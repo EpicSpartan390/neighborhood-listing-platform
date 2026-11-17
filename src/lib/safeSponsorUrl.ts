@@ -22,7 +22,10 @@ const publicHostnamePattern =
 export function validateSponsorDestination(
   value: unknown,
 ): SponsorUrlValidationResult {
-  if (typeof value !== "string") {
+  if (
+    typeof value !== "string" ||
+    value !== value.trim()
+  ) {
     return {
       valid: false,
       error: unsafeSponsorUrlError,
@@ -32,7 +35,7 @@ export function validateSponsorDestination(
   let parsed: URL;
 
   try {
-    parsed = new URL(value.trim());
+    parsed = new URL(value);
   } catch {
     return {
       valid: false,

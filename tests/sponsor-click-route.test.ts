@@ -201,3 +201,45 @@ describe("GET /api/sponsor-click", () => {
     );
   });
 });
+
+describe("adversarial URL and redirect cases", () => {
+  it.each([
+    " javascript:alert(1)",
+    "JaVaScRiPt:alert(1)",
+    "data:text/html,<script>alert(1)</script>",
+    "//evil.example/path",
+    "https://2130706433/",
+    "https://0x7f.0.0.1/",
+    "https://[0:0:0:0:0:ffff:7f00:1]/",
+  ])("rejects encoded or obfuscated URL %s", (url) => {
+    expect(
+      validateSponsorDestination(url),
+    ).toEqual({
+      valid: false,
+      error: unsafeSponsorUrlError,
+    });
+  });
+
+  it("ignores caller-supplied redirect parameters", async () => {
+    mockSponsorQuery({
+      data: {
+        destination_url:
+          "https://partners.example.com/approved",
+      },
+      error: null,
+    });
+
+    const injectedRequest = new Request(
+      `https://example.com/api/sponsor-click?sponsorId=${sponsorId}` +
+        "&url=https%3A%2F%2Fevil.example" +
+        "&redirect=https%3A%2F%2Fevil.example",
+    );
+
+    const response = await GET(injectedRequest);
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe(
+      "https://partners.example.com/approved",
+    );
+  });
+});
