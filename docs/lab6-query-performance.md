@@ -81,4 +81,3 @@ The impression placement remains a post-index filter after sponsor ID and timest
 
 
 This is a small development database. The plan should be inspected again with representative row counts before making production-scale indexing decisions.
-

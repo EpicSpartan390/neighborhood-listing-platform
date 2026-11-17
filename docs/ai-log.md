@@ -768,3 +768,17 @@ This commit contains the Lab 5 implementation, test evidence, AI-review decision
 **Student verification:** Pedro verified 6 of 6 selector adversarial tests, 16 of 16 database tests, and 20 of 20 URL/redirect tests. The complete project suite passed 100 of 100 tests across 11 files. TypeScript and ESLint passed. The follow-up migration succeeded in the separate Lab 6 Supabase project, and all 5 live permission checks returned true.
 
 **Implementation commits:** `0221976` - harden sponsor date and tie handling; `d859c4c` - harden sponsor boundaries and permissions.
+
+## 2026-11-17 - Lab 6 query performance verification
+
+**Tool:** ChatGPT/Codex
+
+**Evidence commit:** 9d4aee3 - docs: record sponsor query explain plan
+
+**Student input:** Guide me through a read-only live EXPLAIN plan for the sponsor eligibility query. Explain which indexes are used and add no index unless the plan justifies it.
+
+**Useful output:** The assistant provided a non-executing EXPLAIN query and interpreted the live PostgreSQL plan. The planner used `sponsors_eligibility_idx`, `properties_pkey`, `sponsor_zip_coverage_pkey`, and `sponsor_impressions_daily_idx`. The estimated total cost was 9.58 for one result row, with no sequential scan.
+
+**Decision:** No additional index was added. The current indexes support the eligibility filters, joins, radius check, and UTC daily impression range. A wider impression index was deferred unless representative production data demonstrates that the placement post-filter is expensive.
+
+**Student verification:** Pedro ran the live index inventory and EXPLAIN query in the separate `neighborhood-listing-lab6` Supabase project. `ANALYZE` was disabled, so the query was not executed and no application data or telemetry was changed.
